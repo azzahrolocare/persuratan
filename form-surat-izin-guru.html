@@ -23,7 +23,6 @@
         .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
         button:active { transform: scale(0.98); }
 
-        /* --- STYLE NOTIFIKASI ESTETIK --- */
         #custom-alert {
             display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
             background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center;
@@ -38,12 +37,10 @@
         .alert-text { color: #2c3e50; font-size: 16px; margin-bottom: 20px; line-height: 1.4; }
         .btn-alert-ok { background: #3498db; color: white; border: none; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
-        /* Modal Preview */
         #preview-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
         .modal-body { display: flex; flex-direction: column; align-items: center; padding: 10px; }
         .pdf-wrapper { background: white; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform-origin: top center; margin-bottom: 20px; }
 
-        /* Template PDF */
         #pdf-template { 
             background: white; padding: 15mm 20mm; font-family: 'Times New Roman', Times, serif; 
             line-height: 1.6; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
@@ -84,7 +81,12 @@
         <datalist id="daftar-guru"></datalist>
     </div>
 
-    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika" enterkeyhint="done"></div>
+    <div class="form-group">
+        <label>Guru Mapel</label>
+        <input type="text" id="mapel" placeholder="Contoh: Matematika" list="daftar-mapel" autocomplete="off" enterkeyhint="done">
+        <datalist id="daftar-mapel"></datalist>
+    </div>
+
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Otomatis" readonly></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl" onchange="updateHari()" enterkeyhint="done"></div>
@@ -147,20 +149,30 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
-    // FUNGSI LOAD DATA GURU KE DATALIST
+    // FUNGSI LOAD DATA GURU & MAPEL KE DATALIST
     function inisialisasiAutosuggest() {
-        const datalist = document.getElementById('daftar-guru');
+        // Isi Datalist Nama
+        const listGuru = document.getElementById('daftar-guru');
         if (typeof daftarNamaGuru !== 'undefined') {
             daftarNamaGuru.forEach(nama => {
-                const option = document.createElement('option');
-                option.value = nama;
-                datalist.appendChild(option);
+                const opt = document.createElement('option');
+                opt.value = nama;
+                listGuru.appendChild(opt);
+            });
+        }
+
+        // Isi Datalist Mapel
+        const listMapel = document.getElementById('daftar-mapel');
+        if (typeof daftarMapel !== 'undefined') {
+            daftarMapel.forEach(mapel => {
+                const opt = document.createElement('option');
+                opt.value = mapel;
+                listMapel.appendChild(opt);
             });
         }
     }
     window.addEventListener('DOMContentLoaded', inisialisasiAutosuggest);
 
-    // Fungsi Otomatis Hari
     function updateHari() {
         const tglInput = document.getElementById('tgl').value;
         const hariInput = document.getElementById('hari');
@@ -173,19 +185,15 @@
         }
     }
 
-    // Fungsi untuk mengubah teks menjadi kapital di awal kata (Proper Case)
     function toTitleCase(str) {
         return str.toLowerCase().split(' ').map(word => {
             return (word.charAt(0).toUpperCase() + word.slice(1));
         }).join(' ');
     }
 
-    // Otomatis menutup keyboard saat menekan "Done" di HP
     document.querySelectorAll('input').forEach(input => {
         input.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter') {
-                this.blur();
-            }
+            if (e.key === 'Enter') { this.blur(); }
         });
     });
 
@@ -209,11 +217,7 @@
     function showPreview() {
         const nama = document.getElementById('nama').value;
         const tgl = document.getElementById('tgl').value;
-        
-        if (!nama || !tgl || pad.isEmpty()) {
-            showAlert();
-            return;
-        }
+        if (!nama || !tgl || pad.isEmpty()) { showAlert(); return; }
 
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
@@ -244,7 +248,6 @@
 
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
-
         btn.disabled = true;
         btn.innerText = "Sedang Mengunduh...";
 
