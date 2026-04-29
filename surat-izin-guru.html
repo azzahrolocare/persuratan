@@ -78,14 +78,14 @@
     <span style="font-size: 24px; font-weight: 800; color: #2c3e50; display: block; letter-spacing: 1px;">GURU AZ-ZAHRO</span>
     </div>
 
-    
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder=" "></div>
-    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika"></div>
+    <!-- Menambahkan enterkeyhint="done" pada kolom input -->
+    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder=" " enterkeyhint="done"></div>
+    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika" enterkeyhint="done"></div>
     <div class="form-group" style="display: flex; gap: 10px;">
-        <div style="flex: 1;"><label>Hari</label><input type="text" enterkeyhint="done" id="hari" placeholder="Senin"></div>
-        <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
+        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin" enterkeyhint="done"></div>
+        <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl" enterkeyhint="done"></div>
     </div>
-    <div class="form-group"><label>Dikarenakan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..."></div>
+    <div class="form-group"><label>Dikarenakan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -141,6 +141,15 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
+    // Otomatis menutup keyboard saat menekan "Done" di HP
+    document.querySelectorAll('input').forEach(input => {
+        input.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                this.blur();
+            }
+        });
+    });
+
     function resize() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
@@ -155,7 +164,6 @@
         return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // FUNGSI NOTIFIKASI
     function showAlert() { document.getElementById('custom-alert').style.display = 'flex'; }
     function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
 
@@ -163,7 +171,6 @@
         const nama = document.getElementById('nama').value;
         const tgl = document.getElementById('tgl').value;
         
-        // Menggunakan Custom Alert sebagai ganti alert()
         if (!nama || !tgl || pad.isEmpty()) {
             showAlert();
             return;
