@@ -13,24 +13,23 @@
         .form-group { margin-bottom: 12px; }
         label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
         input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .sig-container { border: 1px solid #ccc; background: #fafafa; margin-top: 5px; border-radius: 4px; position: relative; }
+        .sig-container { border: 1px solid #ccc; background: #fafafa; margin-top: 5px; border-radius: 4px; }
         canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
         .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-clear { background: #e74c3c; color: white; }
         .btn-save { background: #27ae60; color: white; }
         
-        /* Layout untuk PDF (Times New Roman agar resmi) */
         #pdf-template { 
             display: none; 
             padding: 50px; 
             font-family: 'Times New Roman', serif; 
-            line-height: 1.5; 
+            line-height: 1.6; 
             color: black; 
             font-size: 12pt;
         }
-        .ttd-box { float: right; text-align: center; margin-top: 30px; width: 200px; }
-        .ttd-img { max-width: 150px; height: 80px; object-fit: contain; }
+        .ttd-box { float: right; text-align: center; margin-top: 30px; width: 220px; }
+        .ttd-img { max-width: 150px; height: 80px; object-fit: contain; margin: 5px 0; }
     </style>
 </head>
 <body>
@@ -49,7 +48,7 @@
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;">
             <label>Hari</label>
-            <input type="text" id="hari" placeholder="Senin">
+            <input type="text" id="hari" placeholder="Contoh: Senin">
         </div>
         <div style="flex: 2;">
             <label>Tanggal</label>
@@ -61,7 +60,7 @@
         <textarea id="alasan" rows="2" placeholder="Tulis alasan tidak masuk"></textarea>
     </div>
 
-    <label>Tanda Tangan</label>
+    <label>Tanda Tangan Digital</label>
     <div class="sig-container">
         <canvas id="pad"></canvas>
     </div>
@@ -73,31 +72,31 @@
 </div>
 
 <div id="pdf-template">
-    <p>Perihal: Surat Izin Tidak Masuk Sekolah</p>
+    <p>Perihal: Surat Izin Tidak Masuk Sekolah [cite: 1]</p>
     <p>Kepada Yth.<br>
-    Pengasuh PP.SS Az-Zahro<br>
-    Kepala Sekolah SMP dan SMK Az-Zahro<br>
-    di Bondowoso</p>
+    Pengasuh PP.SS Az-Zahro [cite: 3]<br>
+    Kepala Sekolah SMP dan SMK Az-Zahro [cite: 4]<br>
+    di Bondowoso [cite: 5]</p>
 
-    <p>Assalamualaikum warahmatullahi wabarakatuh.</p>
-    <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
+    <p>Assalamualaikum warahmatullahi wabarakatuh. [cite: 6]</p>
+    <p>Dengan hormat, saya yang bertanda tangan di bawah ini: [cite: 7]</p>
     <table style="width: 100%; margin-left: 10px;">
         <tr><td width="120">Nama</td><td>: <span id="outNama"></span></td></tr>
         <tr><td>Guru Mapel</td><td>: <span id="outMapel"></span></td></tr>
     </table>
 
-    <p>Dengan datangnya surat ini, saya mohon izin untuk tidak masuk Sekolah pada:</p>
+    <p>Dengan datangnya surat ini, saya mohon izin untuk tidak masuk Sekolah pada: [cite: 11]</p>
     <table style="width: 100%; margin-left: 10px;">
         <tr><td width="120">Hari</td><td>: <span id="outHari"></span></td></tr>
         <tr><td>Tanggal</td><td>: <span id="outTgl"></span></td></tr>
         <tr><td>Dikarenakan</td><td>: <span id="outAlasan"></span></td></tr>
     </table>
 
-    <p>Atas perhatian yang diberikan, saya mengucapkan terima kasih.</p>
-    <p>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</p>
+    <p style="margin-top: 20px;">Atas perhatian yang diberikan, saya mengucapkan terima kasih. [cite: 17]</p>
+    <p>Wa'alaikumsalam warahmatullaahi wabarakaatuh. [cite: 18]</p>
 
     <div class="ttd-box">
-        <p>Hormat Saya,</p>
+        <p>Hormat Saya, [cite: 20]</p>
         <img id="outTtd" class="ttd-img">
         <p>( <b id="outNama2"></b> )</p>
     </div>
@@ -107,7 +106,6 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
-    // Auto-resize canvas
     function resize() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
@@ -117,15 +115,28 @@
     window.onresize = resize;
     resize();
 
-    function generate() {
-        if (pad.isEmpty()) return alert("Silakan tanda tangan!");
+    function formatTanggal(dateString) {
+        if (!dateString) return "";
+        const opsi = { day: 'numeric', month: 'long', year: 'numeric' };
+        return new Date(dateString).toLocaleDateString('id-ID', opsi);
+    }
 
-        // Set Data
-        document.getElementById('outNama').innerText = document.getElementById('nama').value;
-        document.getElementById('outNama2').innerText = document.getElementById('nama').value;
+    function generate() {
+        const namaVal = document.getElementById('nama').value;
+        const tglVal = document.getElementById('tgl').value;
+        
+        if (!namaVal || !tglVal || pad.isEmpty()) {
+            return alert("Harap isi Nama, Tanggal, dan Tanda Tangan!");
+        }
+
+        const tanggalLengkap = formatTanggal(tglVal);
+
+        // Isi Data ke Template
+        document.getElementById('outNama').innerText = namaVal;
+        document.getElementById('outNama2').innerText = namaVal;
         document.getElementById('outMapel').innerText = document.getElementById('mapel').value;
         document.getElementById('outHari').innerText = document.getElementById('hari').value;
-        document.getElementById('outTgl').innerText = document.getElementById('tgl').value;
+        document.getElementById('outTgl').innerText = tanggalLengkap;
         document.getElementById('outAlasan').innerText = document.getElementById('alasan').value;
         document.getElementById('outTtd').src = pad.toDataURL();
 
@@ -134,7 +145,7 @@
 
         const opt = {
             margin: 0.8,
-            filename: 'Surat_Izin.pdf',
+            filename: `Surat izin ${namaVal} ${tglVal}.pdf`,
             image: { type: 'jpeg', quality: 1 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
