@@ -92,7 +92,7 @@
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Otomatis" readonly></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl" onchange="updateHari()" enterkeyhint="done"></div>
     </div>
-    <div class="form-group"><label>Dikarenakan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
+    <div class="form-group"><label>Keterangan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -120,7 +120,7 @@
                 <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
                 <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
                 <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Dikarenakan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
 
                 <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
@@ -254,7 +254,7 @@
         let alasanRaw = document.getElementById('alasan').value || "-";
         const alasan = alasanRaw.charAt(0).toUpperCase() + alasanRaw.slice(1);
 
-        const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nAlasan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
+        const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nKeterangan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
