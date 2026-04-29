@@ -252,7 +252,7 @@
         
         // Memastikan alasan kapital di awal huruf
         let alasanRaw = document.getElementById('alasan').value || "-";
-        const alasan = alasanRaw.charAt(0).toUpperCase() + alasanRaw.slice(1);
+        const alasan = toTitleCase(alasanRaw);
 
         const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nKeterangan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
