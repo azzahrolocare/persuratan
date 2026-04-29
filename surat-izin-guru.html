@@ -30,7 +30,7 @@
             background: white; margin: auto; padding: 15px; width: 95%; max-width: 800px; border-radius: 8px; 
         }
 
-        /* Template PDF Styling - Penyesuaian agar lebih ke atas */
+        /* Template PDF Styling */
         #pdf-template { 
             padding: 0; 
             margin: 0;
@@ -42,16 +42,16 @@
         }
         .kop-surat { 
             width: 100%; 
-            margin-top: -10px; /* Menarik kop lebih ke atas */
+            margin-top: -10px;
             margin-bottom: 10px; 
             border-bottom: 2px solid black; 
         }
         .kop-surat img { width: 100%; display: block; }
         .isi-surat { padding: 0 30px; }
-        .ttd-box { float: right; text-align: center; margin-top: 15px; width: 250px; }
-        .ttd-img { max-width: 140px; height: 70px; object-fit: contain; margin: 2px 0; }
+        .ttd-box { float: right; text-align: center; margin-top: 15px; width: 250px; min-height: 120px; }
+        .ttd-img { max-width: 140px; height: 70px; object-fit: contain; margin: 2px 0; display: block; margin-left: auto; margin-right: auto; }
         .clearfix::after { content: ""; clear: both; display: table; }
-        p { margin: 8px 0; } /* Merapatkan jarak antar paragraf */
+        p { margin: 8px 0; }
     </style>
 </head>
 <body>
@@ -79,7 +79,7 @@
     </div>
     <div class="form-group">
         <label>Alasan Izin</label>
-        <textarea id="alasan" rows="3" placeholder="Tulis alasan tidak masuk secara singkat dan jelas"></textarea>
+        <textarea id="alasan" rows="3" placeholder="Tulis alasan tidak masuk"></textarea>
     </div>
 
     <label>Tanda Tangan Digital</label>
@@ -111,13 +111,13 @@
 
                 <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
                 <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
-                <table style="width: 100%; margin-left: 20px; border-collapse: collapse;">
+                <table style="width: 100%; margin-left: 20px;">
                     <tr><td width="130">Nama</td><td>: <span id="outNama"></span></td></tr>
                     <tr><td>Tugas/Jabatan</td><td>: <span id="outMapel"></span></td></tr>
                 </table>
 
                 <p>Bermaksud memohon izin untuk tidak hadir di sekolah pada:</p>
-                <table style="width: 100%; margin-left: 20px; border-collapse: collapse;">
+                <table style="width: 100%; margin-left: 20px;">
                     <tr><td width="130">Hari</td><td>: <span id="outHari"></span></td></tr>
                     <tr><td>Tanggal</td><td>: <span id="outTgl"></span></td></tr>
                     <tr><td>Alasan</td><td>: <span id="outAlasan"></span></td></tr>
@@ -129,16 +129,18 @@
                 <div class="clearfix">
                     <div class="ttd-box">
                         <p>Hormat Saya,</p>
-                        <img id="outTtd" class="ttd-img">
-                        <p style="margin-top: 0;">( <b id="outNama2"></b> )</p>
+                        <div style="height: 75px;">
+                            <img id="outTtd" class="ttd-img">
+                        </div>
+                        <p style="margin-top: 5px;">( <b id="outNama2"></b> )</p>
                     </div>
                 </div>
             </div>
         </div>
         <hr style="margin-top: 20px;">
         <div style="display: flex; gap: 10px;">
-            <button class="btn-clear" onclick="closePreview()">Tutup</button>
-            <button class="btn-save" onclick="downloadPDF()">Simpan & Download PDF (A4)</button>
+            <button class="btn-clear" onclick="closePreview()">Batal</button>
+            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">Simpan & Download PDF</button>
         </div>
     </div>
 </div>
@@ -171,14 +173,18 @@
             return alert("Harap isi Nama, Tanggal, dan Tanda Tangan!");
         }
 
-        document.getElementById('outNama').innerText = namaVal;
-        document.getElementById('outNama2').innerText = namaVal;
-        document.getElementById('outMapel').innerText = document.getElementById('mapel').value || "-";
-        document.getElementById('outHari').innerText = document.getElementById('hari').value || "-";
-        document.getElementById('outTgl').innerText = formatTanggal(tglVal);
-        document.getElementById('outTglSkrg').innerText = formatTanggal(new Date());
-        document.getElementById('outAlasan').innerText = document.getElementById('alasan').value || "-";
-        document.getElementById('outTtd').src = pad.toDataURL();
+        // Memasukkan data ke elemen output
+        document.getElementById('outNama').textContent = namaVal;
+        document.getElementById('outNama2').textContent = namaVal;
+        document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
+        document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
+        document.getElementById('outTgl').textContent = formatTanggal(tglVal);
+        document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
+        document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
+        
+        // Load gambar TTD
+        const dataUri = pad.toDataURL();
+        document.getElementById('outTtd').src = dataUri;
 
         document.getElementById('preview-modal').style.display = 'block';
     }
@@ -187,22 +193,37 @@
         document.getElementById('preview-modal').style.display = 'none';
     }
 
-    function downloadPDF() {
+    async function downloadPDF() {
+        const btn = document.getElementById('btnDownload');
         const namaVal = document.getElementById('nama').value;
-        const tglVal = document.getElementById('tgl').value;
         const el = document.getElementById('pdf-template');
 
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
+
         const opt = {
-            margin: [0.3, 0.4, 0.3, 0.4], // Atas, Kiri, Bawah, Kanan (dalam inci)
+            margin: [0.3, 0.4, 0.3, 0.4],
             filename: `Surat_Izin_${namaVal}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 3, useCORS: true },
+            html2canvas: { 
+                scale: 3, 
+                useCORS: true, 
+                letterRendering: true 
+            },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(el).save().then(() => {
+        try {
+            // Pastikan template terlihat sejenak untuk di-capture
+            await html2pdf().set(opt).from(el).save();
+        } catch (err) {
+            console.error(err);
+            alert("Terjadi kesalahan saat menyimpan PDF");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Simpan & Download PDF";
             closePreview();
-        });
+        }
     }
 
     window.onclick = function(event) {
