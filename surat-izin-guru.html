@@ -15,13 +15,15 @@
         input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
         .sig-container { border: 1px solid #ddd; background: #fcfcfc; border-radius: 6px; }
         canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; min-width: 120px; }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; }
         .btn-clear { background: #95a5a6; color: white; }
         .btn-preview { background: #3498db; color: white; }
-        .btn-wa { background: #25d366; color: white; }
-        .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
-        
+        .btn-save { background: #27ae60; color: white; }
+        .btn-wa { background: #25D366; color: white; }
+
+        /* Modal Preview */
         #preview-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
         .modal-body { display: flex; flex-direction: column; align-items: center; padding: 10px; }
         .pdf-wrapper { background: white; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform-origin: top center; margin-bottom: 20px; }
@@ -29,18 +31,23 @@
         /* Template PDF */
         #pdf-template { 
             background: white; padding: 15mm 20mm; font-family: 'Times New Roman', Times, serif; 
-            line-height: 1.5; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; overflow: hidden;
+            line-height: 1.5; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
         }
-        .kop-surat { width: 100%; margin-bottom: 10px; }
-        .kop-surat img { width: 100%; display: block; }
+        .kop-surat img { width: 100%; display: block; margin-bottom: 10px; }
+        
+        /* Auto Capitalize & Spacing */
         .row-data { display: flex; margin-bottom: 4px; }
         .label-data { width: 130px; flex-shrink: 0; }
+        .cap { text-transform: capitalize; } /* Membuat huruf kapital tiap awal kata */
+
         .ttd-section { margin-top: 25px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
         .ttd-box { width: 250px; }
-        .ttd-img-out { max-width: 150px; height: 70px; object-fit: contain; margin: 5px auto; display: block; }
-        .nama-bawah { font-weight: bold; display: inline-block; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; }
+        .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; }
 
-        .preview-footer { position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #eee; padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0; }
+        .preview-footer { 
+            position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #f8f8f8; 
+            padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; border-top: 1px solid #ddd;
+        }
     </style>
 </head>
 <body>
@@ -48,20 +55,18 @@
 <div class="container">
     <h2>Form Surat Izin Az-Zahro</h2>
     <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Contoh: rahmatullah"></div>
-    <div class="form-group"><label>Guru Mapel/Jabatan</label><input type="text" id="mapel" placeholder="Contoh: guru ipa"></div>
+    <div class="form-group"><label>Guru Mapel/Jabatan</label><input type="text" id="mapel" placeholder="Contoh: guru informatika"></div>
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin"></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
     </div>
-    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder="Sakit / ada keperluan keluarga"></textarea></div>
+    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder="Sakit / Ada keperluan keluarga"></textarea></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
-    
     <div class="btn-row">
         <button class="btn-clear" onclick="pad.clear()">Hapus TTD</button>
         <button class="btn-preview" onclick="showPreview()">Preview Surat</button>
-        <button class="btn-wa" onclick="shareWA()">Bagikan ke WA</button>
     </div>
 </div>
 
@@ -69,40 +74,38 @@
     <div class="modal-body">
         <div class="pdf-wrapper" id="zoom-wrapper">
             <div id="pdf-template">
-                <div class="kop-surat">
-                    <img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png" alt="Kop">
-                </div>
+                <div class="kop-surat"><img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png"></div>
                 <div style="text-align: right; margin-bottom: 10px;">Bondowoso, <span id="outTglSkrg"></span></div>
-                <p style="margin: 5px 0;">Perihal : <b>Surat Pemberitahuan Ketidakhadiran</b></p>
-                <p style="margin: 5px 0;">Kepada Yth.<br><b>Pengasuh PP.SS Az-Zahro</b><br><b>Kepala Sekolah SMP dan SMK Az-Zahro</b><br>di Tempat</p>
+                <p>Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
+                <p>Kepada Yth.<br><b>Pengasuh PP.SS Az-Zahro</b><br><b>Kepala Sekolah SMP dan SMK Az-Zahro</b><br>di Tempat</p>
                 <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
-                <p>Dengan hormat, saya yang bertanda tangan di bawah ini :</p>
+                <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
                 
-                <div class="row-data"><div class="label-data">Nama</div> : <span id="outNama"></span></div>
-                <div class="row-data"><div class="label-data">Tugas/Jabatan</div> : <span id="outMapel"></span></div>
-                
-                <p>Bermaksud memohon izin untuk tidak hadir di sekolah pada :</p>
-                
-                <div class="row-data"><div class="label-data">Hari</div> : <span id="outHari"></span></div>
-                <div class="row-data"><div class="label-data">Tanggal</div> : <span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Alasan</div> : <span id="outAlasan"></span></div>
-                
+                <div class="row-data"><div class="label-data">Nama</div><span> : </span><span id="outNama" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Tugas/Jabatan</div><span> : </span><span id="outMapel" class="cap"></span></div>
+
+                <p>Bermaksud memohon izin untuk tidak hadir di sekolah pada:</p>
+                <div class="row-data"><div class="label-data">Hari</div><span> : </span><span id="outHari" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Tanggal</div><span> : </span><span id="outTgl"></span></div>
+                <div class="row-data"><div class="label-data">Alasan</div><span> : </span><span id="outAlasan" class="cap"></span></div>
+
                 <p style="margin-top: 15px;">Demikian surat permohonan izin ini saya sampaikan. Atas perhatiannya, saya ucapkan terima kasih.</p>
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
+
                 <div class="ttd-section">
                     <div class="ttd-box">
                         <p style="margin-bottom: 0;">Hormat Saya,</p>
-                        <div style="height: 75px; display: flex; align-items: center; justify-content: center;">
-                            <img id="outTtd" class="ttd-img-out">
-                        </div>
+                        <div style="height: 75px; display: flex; align-items: center; justify-content: center;"><img id="outTtd" style="max-width:150px; max-height:70px;"></div>
                         <span class="nama-bawah" id="outNama2"></span>
                     </div>
                 </div>
             </div>
         </div>
+        
         <div class="preview-footer">
             <button class="btn-clear" onclick="closePreview()">Batal</button>
-            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">UNDUH PDF (A4)</button>
+            <button class="btn-save" id="btnDownload" onclick="processPDF('download')">Unduh PDF</button>
+            <button class="btn-wa" onclick="processPDF('whatsapp')">Bagikan ke WA</button>
         </div>
     </div>
 </div>
@@ -118,13 +121,7 @@
         canvas.getContext("2d").scale(ratio, ratio);
         pad.clear(); 
     }
-    window.onresize = resize;
-    resize();
-
-    // Fungsi Otomatis Kapital Awal Kata
-    function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-    }
+    window.onresize = resize; resize();
 
     function formatTanggal(d) {
         if (!d) return "";
@@ -132,21 +129,16 @@
     }
 
     function showPreview() {
-        const namaRaw = document.getElementById('nama').value;
-        if (!namaRaw || !document.getElementById('tgl').value || pad.isEmpty()) return alert("Data belum lengkap!");
-
-        const nama = toTitleCase(namaRaw);
-        const mapel = toTitleCase(document.getElementById('mapel').value || "-");
-        const hari = toTitleCase(document.getElementById('hari').value || "-");
-        const alasan = toTitleCase(document.getElementById('alasan').value || "-");
+        const nama = document.getElementById('nama').value;
+        if (!nama || !document.getElementById('tgl').value || pad.isEmpty()) return alert("Lengkapi data dan tanda tangan!");
 
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
-        document.getElementById('outMapel').textContent = mapel;
-        document.getElementById('outHari').textContent = hari;
+        document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
+        document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
         document.getElementById('outTgl').textContent = formatTanggal(document.getElementById('tgl').value);
         document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
-        document.getElementById('outAlasan').textContent = alasan;
+        document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
         document.getElementById('outTtd').src = pad.toDataURL();
 
         document.getElementById('preview-modal').style.display = 'block';
@@ -158,25 +150,27 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    async function downloadPDF() {
+    async function processPDF(mode) {
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
+        const namaUser = document.getElementById('nama').value;
+        
         const wrapper = document.getElementById('zoom-wrapper');
-        const oldTransform = wrapper.style.transform;
-
+        const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
+
         btn.disabled = true;
-        btn.innerText = "Mengolah...";
+        btn.innerText = "Processing...";
 
         await new Promise(r => setTimeout(r, 500));
 
         const opt = {
             margin: 0,
-            filename: `Surat_Izin_${document.getElementById('nama').value}.pdf`,
+            filename: `Surat_Izin_${namaUser}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' } 
+            pagebreak: { mode: 'avoid-all' }
         };
 
         html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
@@ -184,27 +178,15 @@
             for (let i = totalPages; i > 1; i--) { pdf.deletePage(i); }
         }).save().then(() => {
             btn.disabled = false;
-            btn.innerText = "UNDUH PDF (A4)";
-            wrapper.style.transform = oldTransform;
+            btn.innerText = "Unduh PDF";
+            wrapper.style.transform = currentTransform;
+            
+            if(mode === 'whatsapp') {
+                const text = encodeURIComponent(`Halo, saya mengirimkan Surat Izin Ketidakhadiran atas nama ${namaUser}. File PDF sudah terunduh di perangkat saya.`);
+                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
+            }
             closePreview();
         });
-    }
-
-    function shareWA() {
-        const nama = toTitleCase(document.getElementById('nama').value);
-        const tgl = formatTanggal(document.getElementById('tgl').value);
-        const alasan = document.getElementById('alasan').value;
-        
-        if(!nama || !tgl) return alert("Isi data terlebih dahulu!");
-
-        const pesan = encodeURIComponent(
-            `*SURAT PEMBERITAHUAN IZIN*\n\n` +
-            `Nama : ${nama}\n` +
-            `Tanggal : ${tgl}\n` +
-            `Alasan : ${alasan}\n\n` +
-            `_Surat PDF resmi telah digenerate melalui sistem._`
-        );
-        window.open(`https://wa.me/?text=${pesan}`, '_blank');
     }
 </script>
 </body>
