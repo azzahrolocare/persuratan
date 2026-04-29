@@ -22,6 +22,7 @@
         .btn-preview { background: #3498db; color: white; }
         .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
         .btn-wa { background: #25D366; color: white; width: 100%; margin-top: 15px; }
+        .btn-text { background: #128C7E; color: white; width: 100%; margin-top: 15px; }
         button:active { transform: scale(0.98); }
 
         #custom-alert {
@@ -56,8 +57,9 @@
         .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; margin-top: 5px; }
         .preview-footer { 
             position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #eee; 
-            padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0;
+            padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0;
         }
+        .preview-footer button { flex: 1 1 150px; margin-top: 0 !important; }
     </style>
 </head>
 <body>
@@ -139,7 +141,8 @@
         
         <div class="preview-footer">
             <button class="btn-clear" onclick="closePreview()">Batal</button>
-            <button class="btn-wa" id="btnShare" onclick="shareToWhatsApp()">BAGIKAN KE WA</button>
+            <button class="btn-text" onclick="shareTextOnly()">BAGIKAN TEKS SAJA</button>
+            <button class="btn-wa" id="btnShare" onclick="shareToWhatsApp()">BAGIKAN GAMBAR (WA)</button>
             <button class="btn-save" id="btnDownload" onclick="downloadPDF()">SIMPAN PDF</button>
         </div>
     </div>
@@ -151,9 +154,7 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
-    // FUNGSI LOAD DATA GURU & MAPEL KE DATALIST
     function inisialisasiAutosuggest() {
-        // Isi Datalist Nama
         const listGuru = document.getElementById('daftar-guru');
         if (typeof daftarNamaGuru !== 'undefined') {
             daftarNamaGuru.forEach(nama => {
@@ -163,7 +164,6 @@
             });
         }
 
-        // Isi Datalist Mapel
         const listMapel = document.getElementById('daftar-mapel');
         if (typeof daftarMapel !== 'undefined') {
             daftarMapel.forEach(mapel => {
@@ -239,7 +239,49 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    // FITUR BAGIKAN KE WHATSAPP (TEKS + GAMBAR)
+    // FUNGSI BARU: BAGIKAN TEKS SAJA
+    function shareTextOnly() {
+        const nama = document.getElementById('nama').value;
+        const mapel = document.getElementById('mapel').value || "-";
+        const hari = document.getElementById('hari').value || "-";
+        const tgl = formatTanggal(document.getElementById('tgl').value);
+        const alasanRaw = document.getElementById('alasan').value || "-";
+        const alasan = toTitleCase(alasanRaw);
+        const tglSekarang = formatTanggal(new Date());
+
+        const pesanTeks = 
+`*SURAT PEMBERITAHUAN KETIDAKHADIRAN*
+Bondowoso, ${tglSekarang}
+
+Kepada Yth.
+*Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro*
+*Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro*
+di Tempat
+
+Assalamu'alaikum warahmatullahi wabarakatuh.
+
+Dengan hormat, saya yang bertanda tangan di bawah ini:
+Nama: *${nama}*
+Guru Mapel: ${mapel}
+
+Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:
+Hari: ${hari}
+Tanggal: ${tgl}
+Keterangan: *${alasan}*
+
+Demikian surat permohonan izin ini saya sampaikan. Atas perhatiannya, saya ucapkan terima kasih.
+
+Wassalamu'alaikum warahmatullahi wabarakatuh.
+
+Hormat Saya,
+*${nama}*
+
+_Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
+
+        const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
+        window.open(url, '_blank');
+    }
+
     async function shareToWhatsApp() {
         const btn = document.getElementById('btnShare');
         const el = document.getElementById('pdf-template');
@@ -249,8 +291,6 @@
         const mapel = document.getElementById('mapel').value || "-";
         const hari = document.getElementById('hari').value || "-";
         const tgl = formatTanggal(document.getElementById('tgl').value);
-        
-        // Memastikan alasan kapital di awal huruf
         let alasanRaw = document.getElementById('alasan').value || "-";
         const alasan = toTitleCase(alasanRaw);
 
@@ -262,7 +302,6 @@
         btn.innerText = "Memproses...";
 
         try {
-            // Mengambil gambar menggunakan worker html2pdf (html2canvas)
             const opt = { margin: 0, filename: 'temp.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
             const canvasImg = await html2pdf().set(opt).from(el).toCanvas().get('canvas');
             
@@ -270,25 +309,17 @@
             const file = new File([blob], `Izin_${nama.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    text: pesanTeks
-                });
+                await navigator.share({ files: [file], text: pesanTeks });
             } else if (navigator.share) {
-                // Fallback teks saja jika browser tidak dukung share file
                 await navigator.share({ title: 'Surat Izin Guru', text: pesanTeks });
             } else {
-                const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
-                window.open(url, '_blank');
+                window.open(`https://wa.me/?text=${encodeURIComponent(pesanTeks)}`, '_blank');
             }
         } catch (err) {
-            console.error(err);
-            // Fallback terakhir ke Link WA me
-            const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
-            window.open(url, '_blank');
+            window.open(`https://wa.me/?text=${encodeURIComponent(pesanTeks)}`, '_blank');
         } finally {
             btn.disabled = false;
-            btn.innerText = "BAGIKAN KE WA";
+            btn.innerText = "BAGIKAN GAMBAR (WA)";
             wrapper.style.transform = currentTransform;
         }
     }
