@@ -92,7 +92,7 @@
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Otomatis" readonly></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl" onchange="updateHari()" enterkeyhint="done"></div>
     </div>
-    <div class="form-group"><label>Keterangan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
+    <div class="form-group"><label>Dikarenakan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -120,7 +120,7 @@
                 <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
                 <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
                 <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Keterangan:</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Dikarenakan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
 
                 <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
@@ -151,7 +151,9 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
+    // FUNGSI LOAD DATA GURU & MAPEL KE DATALIST
     function inisialisasiAutosuggest() {
+        // Isi Datalist Nama
         const listGuru = document.getElementById('daftar-guru');
         if (typeof daftarNamaGuru !== 'undefined') {
             daftarNamaGuru.forEach(nama => {
@@ -160,6 +162,8 @@
                 listGuru.appendChild(opt);
             });
         }
+
+        // Isi Datalist Mapel
         const listMapel = document.getElementById('daftar-mapel');
         if (typeof daftarMapel !== 'undefined') {
             daftarMapel.forEach(mapel => {
@@ -184,7 +188,9 @@
     }
 
     function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => (word.charAt(0).toUpperCase() + word.slice(1))).join(' ');
+        return str.toLowerCase().split(' ').map(word => {
+            return (word.charAt(0).toUpperCase() + word.slice(1));
+        }).join(' ');
     }
 
     document.querySelectorAll('input').forEach(input => {
@@ -233,26 +239,32 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    // FUNGSI BAGIKAN KE WHATSAPP (TEKS + GAMBAR)
+    // FITUR BAGIKAN KE WHATSAPP (TEKS + GAMBAR)
     async function shareToWhatsApp() {
         const btn = document.getElementById('btnShare');
         const el = document.getElementById('pdf-template');
+        const wrapper = document.getElementById('zoom-wrapper');
+        
         const nama = document.getElementById('nama').value;
-        const mapel = document.getElementById('mapel').value;
-        const hari = document.getElementById('hari').value;
+        const mapel = document.getElementById('mapel').value || "-";
+        const hari = document.getElementById('hari').value || "-";
         const tgl = formatTanggal(document.getElementById('tgl').value);
-        const alasan = document.getElementById('alasan').value;
+        
+        // Memastikan alasan kapital di awal huruf
+        let alasanRaw = document.getElementById('alasan').value || "-";
+        const alasan = alasanRaw.charAt(0).toUpperCase() + alasanRaw.slice(1);
 
-        const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nKeterangan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Az-Zahro_`;
+        const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nAlasan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Az-Zahro_`;
 
+        const currentTransform = wrapper.style.transform;
+        wrapper.style.transform = "scale(1)";
         btn.disabled = true;
         btn.innerText = "Memproses...";
 
         try {
-            // Gunakan html2pdf internal worker untuk capture element
-            const opt = { margin: 0, filename: 'izin.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
-            const worker = html2pdf().set(opt).from(el);
-            const canvasImg = await worker.toCanvas().get('canvas');
+            // Mengambil gambar menggunakan worker html2pdf (html2canvas)
+            const opt = { margin: 0, filename: 'temp.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
+            const canvasImg = await html2pdf().set(opt).from(el).toCanvas().get('canvas');
             
             const blob = await new Promise(resolve => canvasImg.toBlob(resolve, 'image/png'));
             const file = new File([blob], `Izin_${nama.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
@@ -262,25 +274,22 @@
                     files: [file],
                     text: pesanTeks
                 });
+            } else if (navigator.share) {
+                // Fallback teks saja jika browser tidak dukung share file
+                await navigator.share({ title: 'Surat Izin Guru', text: pesanTeks });
             } else {
-                throw new Error("Share image not supported");
-            }
-        } catch (err) {
-            // Jika gagal share gambar, fallback ke share TEKS SAJA
-            console.log("Gagal share gambar, beralih ke teks...");
-            if (navigator.share) {
-                await navigator.share({
-                    title: 'Surat Izin Guru',
-                    text: pesanTeks
-                });
-            } else {
-                // Fallback terakhir: Buka link WhatsApp Web langsung (hanya teks)
                 const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
                 window.open(url, '_blank');
             }
+        } catch (err) {
+            console.error(err);
+            // Fallback terakhir ke Link WA me
+            const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
+            window.open(url, '_blank');
         } finally {
             btn.disabled = false;
             btn.innerText = "BAGIKAN KE WA";
+            wrapper.style.transform = currentTransform;
         }
     }
 
@@ -288,6 +297,7 @@
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
+        
         const namaMentah = document.getElementById('nama').value || "Tanpa Nama";
         const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
         const tanggalFile = document.getElementById('tgl').value || "";
@@ -297,12 +307,15 @@
         btn.disabled = true;
         btn.innerText = "Sedang Mengunduh...";
 
+        await new Promise(r => setTimeout(r, 600));
+
         const opt = {
             margin: 0,
             filename: `Surat_Izin_${namaFile}_${tanggalFile}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak: { mode: 'avoid-all' }
         };
 
         html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
