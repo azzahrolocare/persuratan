@@ -21,6 +21,7 @@
         .btn-clear { background: #95a5a6; color: white; }
         .btn-preview { background: #3498db; color: white; }
         .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
+        .btn-wa { background: #25D366; color: white; width: 100%; margin-top: 15px; }
         button:active { transform: scale(0.98); }
 
         #custom-alert {
@@ -138,7 +139,8 @@
         
         <div class="preview-footer">
             <button class="btn-clear" onclick="closePreview()">Batal</button>
-            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">SIMPAN</button>
+            <button class="btn-wa" id="btnShare" onclick="shareToWhatsApp()">BAGIKAN KE WA</button>
+            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">SIMPAN PDF</button>
         </div>
     </div>
 </div>
@@ -151,7 +153,6 @@
 
     // FUNGSI LOAD DATA GURU & MAPEL KE DATALIST
     function inisialisasiAutosuggest() {
-        // Isi Datalist Nama
         const listGuru = document.getElementById('daftar-guru');
         if (typeof daftarNamaGuru !== 'undefined') {
             daftarNamaGuru.forEach(nama => {
@@ -161,7 +162,6 @@
             });
         }
 
-        // Isi Datalist Mapel
         const listMapel = document.getElementById('daftar-mapel');
         if (typeof daftarMapel !== 'undefined') {
             daftarMapel.forEach(mapel => {
@@ -237,6 +237,41 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
+    // FUNGSI BAGIKAN KE WHATSAPP (SEBAGAI GAMBAR)
+    async function shareToWhatsApp() {
+        const btn = document.getElementById('btnShare');
+        const el = document.getElementById('pdf-template');
+        const wrapper = document.getElementById('zoom-wrapper');
+        const namaMentah = document.getElementById('nama').value || "Guru";
+        const currentTransform = wrapper.style.transform;
+
+        wrapper.style.transform = "scale(1)";
+        btn.disabled = true;
+        btn.innerText = "Memproses...";
+
+        try {
+            const canvasImg = await html2canvas(el, { scale: 2, useCORS: true });
+            const blob = await new Promise(resolve => canvasImg.toBlob(resolve, 'image/png'));
+            const file = new File([blob], `Surat_Izin_${namaMentah.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
+
+            if (navigator.canShare && navigator.canShare({ files: [file] })) {
+                await navigator.share({
+                    files: [file],
+                    title: 'Surat Izin Guru',
+                    text: `Surat Izin Ketidakhadiran - ${namaMentah}`
+                });
+            } else {
+                alert("Browser Anda tidak mendukung fitur berbagi langsung. Silakan unduh PDF saja.");
+            }
+        } catch (err) {
+            console.error(err);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "BAGIKAN KE WA";
+            wrapper.style.transform = currentTransform;
+        }
+    }
+
     async function downloadPDF() {
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
@@ -267,7 +302,7 @@
             for (let i = totalPages; i > 1; i--) { pdf.deletePage(i); }
         }).save().then(() => {
             btn.disabled = false;
-            btn.innerText = "SIMPAN";
+            btn.innerText = "SIMPAN PDF";
             wrapper.style.transform = currentTransform;
             closePreview();
         });
