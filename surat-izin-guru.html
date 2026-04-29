@@ -7,35 +7,50 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
-        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 10px; margin: 0; }
-        .container { max-width: 550px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; font-size: 1.2rem; margin-bottom: 20px; }
-        .form-group { margin-bottom: 12px; }
-        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
-        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
-        .sig-container { border: 1px solid #ccc; background: #fafafa; margin-top: 5px; border-radius: 4px; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f0f2f5; padding: 20px; margin: 0; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        .form-group { margin-bottom: 15px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #34495e; }
+        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
+        .sig-container { border: 1px solid #ddd; background: #fcfcfc; margin-top: 5px; border-radius: 6px; }
         canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
-        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
-        button { flex: 1; padding: 12px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; font-size: 14px; }
-        .btn-clear { background: #e74c3c; color: white; }
-        .btn-save { background: #27ae60; color: white; }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
+        .btn-clear { background: #95a5a6; color: white; }
+        .btn-preview { background: #3498db; color: white; }
+        .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
         
+        /* Modal Preview */
+        #preview-modal { 
+            display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); overflow-y: auto; padding: 20px 0;
+        }
+        .modal-content { 
+            background: white; margin: auto; padding: 20px; width: 90%; max-width: 800px; border-radius: 8px; 
+        }
+
+        /* Template PDF Styling */
         #pdf-template { 
-            display: none; 
-            padding: 50px; 
-            font-family: 'Times New Roman', serif; 
-            line-height: 1.6; 
+            padding: 0; 
+            font-family: 'Times New Roman', Times, serif; 
+            line-height: 1.5; 
             color: black; 
             font-size: 12pt;
+            background: white;
         }
-        .ttd-box { float: right; text-align: center; margin-top: 30px; width: 220px; }
+        .kop-surat { width: 100%; margin-bottom: 10px; border-bottom: 3px solid black; padding-bottom: 5px; }
+        .kop-surat img { width: 100%; display: block; }
+        .isi-surat { padding: 0 40px; }
+        .ttd-box { float: right; text-align: center; margin-top: 20px; width: 250px; }
         .ttd-img { max-width: 150px; height: 80px; object-fit: contain; margin: 5px 0; }
+        .clearfix::after { content: ""; clear: both; display: table; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Generator Surat Izin Az-Zahro</h2>
+    <h2>Form Surat Izin Az-Zahro</h2>
     
     <div class="form-group">
         <label>Nama Lengkap</label>
@@ -43,7 +58,7 @@
     </div>
     <div class="form-group">
         <label>Guru Mata Pelajaran</label>
-        <input type="text" id="mapel" placeholder="Contoh: Matematika">
+        <input type="text" id="mapel" placeholder="Contoh: Matematika / Wali Kelas">
     </div>
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;">
@@ -51,13 +66,13 @@
             <input type="text" id="hari" placeholder="Contoh: Senin">
         </div>
         <div style="flex: 2;">
-            <label>Tanggal</label>
+            <label>Tanggal Izin</label>
             <input type="date" id="tgl">
         </div>
     </div>
     <div class="form-group">
         <label>Alasan Izin</label>
-        <textarea id="alasan" rows="2" placeholder="Tulis alasan tidak masuk"></textarea>
+        <textarea id="alasan" rows="3" placeholder="Tulis alasan tidak masuk secara detail"></textarea>
     </div>
 
     <label>Tanda Tangan Digital</label>
@@ -67,38 +82,57 @@
     
     <div class="btn-row">
         <button class="btn-clear" onclick="pad.clear()">Hapus TTD</button>
-        <button class="btn-save" onclick="generate()">Simpan PDF</button>
+        <button class="btn-preview" onclick="showPreview()">Preview Surat</button>
     </div>
 </div>
 
-<div id="pdf-template">
-    <p>Perihal: Surat Pemberitahuan Ketidakhadiran Sekolah</p>
-    <p>Kepada Yth.<br>
-    Pengasuh PP.SS Az-Zahro<br>
-    Kepala Sekolah SMP dan SMK Az-Zahro<br>
-    di Bondowoso</p>
+<div id="preview-modal">
+    <div class="modal-content">
+        <div id="pdf-template">
+            <div class="kop-surat">
+                <img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png" alt="Kop Surat">
+            </div>
+            
+            <div class="isi-surat">
+                <p style="text-align: right; margin-bottom: 20px;">Bondowoso, <span id="outTglSkrg"></span></p>
+                
+                <p>Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
+                <p>Kepada Yth.<br>
+                Pengasuh PP.SS Az-Zahro<br>
+                Kepala Sekolah SMP dan SMK Az-Zahro<br>
+                di Tempat</p>
 
-    <p>Assalamualaikum warahmatullahi wabarakatuh.</p>
-    <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
-    <table style="width: 100%; margin-left: 10px;">
-        <tr><td width="120">Nama</td><td>: <span id="outNama"></span></td></tr>
-        <tr><td>Guru Mapel</td><td>: <span id="outMapel"></span></td></tr>
-    </table>
+                <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+                <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
+                <table style="width: 100%; margin-left: 20px;">
+                    <tr><td width="130">Nama</td><td>: <span id="outNama"></span></td></tr>
+                    <tr><td>Tugas/Mapel</td><td>: <span id="outMapel"></span></td></tr>
+                </table>
 
-    <p>Dengan datangnya surat ini, saya mohon izin untuk tidak masuk Sekolah pada:</p>
-    <table style="width: 100%; margin-left: 10px;">
-        <tr><td width="120">Hari</td><td>: <span id="outHari"></span></td></tr>
-        <tr><td>Tanggal</td><td>: <span id="outTgl"></span></td></tr>
-        <tr><td>Dikarenakan</td><td>: <span id="outAlasan"></span></td></tr>
-    </table>
+                <p>Dengan datangnya surat ini, saya bermaksud memohon izin untuk tidak hadir di sekolah pada:</p>
+                <table style="width: 100%; margin-left: 20px;">
+                    <tr><td width="130">Hari</td><td>: <span id="outHari"></span></td></tr>
+                    <tr><td>Tanggal</td><td>: <span id="outTgl"></span></td></tr>
+                    <tr><td>Alasan</td><td>: <span id="outAlasan"></span></td></tr>
+                </table>
 
-    <p style="margin-top: 20px;">Atas perhatian yang diberikan, saya mengucapkan terima kasih.</p>
-    <p>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</p>
+                <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan. Atas perhatian dan kebijaksanaannya, saya ucapkan terima kasih.</p>
+                <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
 
-    <div class="ttd-box">
-        <p>Hormat Saya,</p>
-        <img id="outTtd" class="ttd-img">
-        <p>( <b id="outNama2"></b> )</p>
+                <div class="clearfix">
+                    <div class="ttd-box">
+                        <p>Hormat Saya,</p>
+                        <img id="outTtd" class="ttd-img">
+                        <p>( <b id="outNama2"></b> )</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <hr>
+        <div style="display: flex; gap: 10px;">
+            <button class="btn-clear" onclick="closePreview()">Tutup</button>
+            <button class="btn-save" onclick="downloadPDF()">Simpan & Download PDF</button>
+        </div>
     </div>
 </div>
 
@@ -111,6 +145,7 @@
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
+        pad.clear(); 
     }
     window.onresize = resize;
     resize();
@@ -121,7 +156,7 @@
         return new Date(dateString).toLocaleDateString('id-ID', opsi);
     }
 
-    function generate() {
+    function showPreview() {
         const namaVal = document.getElementById('nama').value;
         const tglVal = document.getElementById('tgl').value;
         
@@ -129,31 +164,47 @@
             return alert("Harap isi Nama, Tanggal, dan Tanda Tangan!");
         }
 
-        const tanggalLengkap = formatTanggal(tglVal);
-
-        // Isi Data ke Template
+        // Isi Data ke Preview
         document.getElementById('outNama').innerText = namaVal;
         document.getElementById('outNama2').innerText = namaVal;
-        document.getElementById('outMapel').innerText = document.getElementById('mapel').value;
-        document.getElementById('outHari').innerText = document.getElementById('hari').value;
-        document.getElementById('outTgl').innerText = tanggalLengkap;
-        document.getElementById('outAlasan').innerText = document.getElementById('alasan').value;
+        document.getElementById('outMapel').innerText = document.getElementById('mapel').value || "-";
+        document.getElementById('outHari').innerText = document.getElementById('hari').value || "-";
+        document.getElementById('outTgl').innerText = formatTanggal(tglVal);
+        document.getElementById('outTglSkrg').innerText = formatTanggal(new Date());
+        document.getElementById('outAlasan').innerText = document.getElementById('alasan').value || "-";
         document.getElementById('outTtd').src = pad.toDataURL();
 
+        document.getElementById('preview-modal').style.display = 'block';
+    }
+
+    function closePreview() {
+        document.getElementById('preview-modal').style.display = 'none';
+    }
+
+    function downloadPDF() {
+        const namaVal = document.getElementById('nama').value;
+        const tglVal = document.getElementById('tgl').value;
         const el = document.getElementById('pdf-template');
-        el.style.display = 'block';
 
         const opt = {
-            margin: 0.8,
-            filename: `Surat izin ${namaVal} ${tglVal}.pdf`,
-            image: { type: 'jpeg', quality: 1 },
-            html2canvas: { scale: 2 },
-            jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+            margin: 0.5,
+            filename: `Surat_Izin_${namaVal}_${tglVal}.pdf`,
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { scale: 2, useCORS: true, logging: false },
+            jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(el).save().then(() => {
-            el.style.display = 'none';
+            closePreview();
         });
+    }
+
+    // Menutup modal jika klik di luar area modal
+    window.onclick = function(event) {
+        const modal = document.getElementById('preview-modal');
+        if (event.target == modal) {
+            closePreview();
+        }
     }
 </script>
 
