@@ -4,61 +4,210 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Surat Izin Guru Az-Zahro</title>
+    <!-- Libraries -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
-        body { font-family: 'Segoe UI', Tahoma, sans-serif; background: #f0f2f5; padding: 15px; margin: 0; }
-        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        h2 { text-align: center; color: #2c3e50; margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 5px; color: #34495e; }
-        input, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; font-size: 14px; }
-        .sig-container { border: 1px solid #ddd; background: #fcfcfc; border-radius: 6px; }
-        canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
-        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        :root {
+            --primary: #2c3e50;
+            --secondary: #3498db;
+            --success: #27ae60;
+            --danger: #e74c3c;
+            --gray: #95a5a6;
+            --bg: #f0f2f5;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+            background: var(--bg); 
+            padding: 15px; 
+            margin: 0; 
+            color: #333;
+        }
+
+        .container { 
+            max-width: 600px; 
+            margin: auto; 
+            background: white; 
+            padding: 25px; 
+            border-radius: 16px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); 
+        }
+
+        .header-label {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header-label .sub {
+            font-size: 12px;
+            font-weight: 800;
+            color: var(--gray);
+            letter-spacing: 2px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .header-label .main {
+            font-size: 26px;
+            font-weight: 900;
+            color: var(--primary);
+            display: block;
+        }
+
+        .form-group { margin-bottom: 18px; }
         
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
-        .btn-clear { background: #95a5a6; color: white; }
-        .btn-preview { background: #3498db; color: white; }
-        .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
+        label { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 700; 
+            margin-bottom: 8px; 
+            color: var(--primary); 
+        }
+
+        input { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1.5px solid #e0e0e0; 
+            border-radius: 8px; 
+            box-sizing: border-box; 
+            font-size: 15px; 
+            transition: border-color 0.3s;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--secondary);
+        }
+
+        .sig-container { 
+            border: 1.5px solid #e0e0e0; 
+            background: #fafafa; 
+            border-radius: 8px; 
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+
+        canvas { 
+            width: 100%; 
+            height: 180px; 
+            display: block; 
+            cursor: crosshair; 
+            touch-action: none;
+        }
+
+        .btn-row { 
+            display: flex; 
+            gap: 12px; 
+            margin-top: 20px; 
+        }
+
+        button { 
+            flex: 1; 
+            padding: 14px; 
+            border: none; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: 14px; 
+            transition: all 0.2s ease; 
+        }
+
+        .btn-clear { background: var(--gray); color: white; }
+        .btn-preview { background: var(--secondary); color: white; }
+        .btn-save { background: var(--success); color: white; width: 100%; margin-top: 15px; }
+        
+        button:hover { opacity: 0.9; }
         button:active { transform: scale(0.98); }
 
-        /* --- STYLE NOTIFIKASI ESTETIK --- */
+        /* --- ALERT BOX --- */
         #custom-alert {
-            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center;
+            display: none; position: fixed; z-index: 3000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); align-items: center; justify-content: center;
         }
         .alert-content {
-            background: white; padding: 30px; border-radius: 15px; text-align: center;
-            max-width: 320px; width: 80%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+            background: white; padding: 30px; border-radius: 20px; text-align: center;
+            max-width: 340px; width: 85%; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            animation: bounceIn 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55);
         }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-        .alert-icon { font-size: 50px; color: #e74c3c; margin-bottom: 15px; }
-        .alert-text { color: #2c3e50; font-size: 16px; margin-bottom: 20px; line-height: 1.4; }
-        .btn-alert-ok { background: #3498db; color: white; border: none; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        @keyframes bounceIn { from { transform: scale(0.5); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-icon { font-size: 50px; margin-bottom: 15px; }
+        .alert-text { color: var(--primary); font-size: 16px; margin-bottom: 25px; line-height: 1.5; font-weight: 500; }
+        .btn-alert-ok { background: var(--secondary); color: white; border: none; padding: 12px 40px; border-radius: 25px; cursor: pointer; font-weight: bold; }
 
-        /* Modal Preview */
-        #preview-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
-        .modal-body { display: flex; flex-direction: column; align-items: center; padding: 10px; }
-        .pdf-wrapper { background: white; box-shadow: 0 0 20px rgba(0,0,0,0.5); transform-origin: top center; margin-bottom: 20px; }
+        /* --- PREVIEW MODAL --- */
+        #preview-modal { 
+            display: none; 
+            position: fixed; 
+            z-index: 1000; 
+            left: 0; 
+            top: 0; 
+            width: 100%; 
+            height: 100%; 
+            background: rgba(0,0,0,0.85); 
+            overflow-y: auto; 
+            -webkit-overflow-scrolling: touch;
+        }
+        .modal-body { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            padding: 20px 10px; 
+        }
+        .pdf-wrapper { 
+            background: white; 
+            box-shadow: 0 0 30px rgba(0,0,0,0.5); 
+            transform-origin: top center; 
+            margin-bottom: 20px; 
+        }
 
-        /* Template PDF */
+        /* --- TEMPLATE PDF --- */
         #pdf-template { 
-            background: white; padding: 15mm 20mm; font-family: 'Times New Roman', Times, serif; 
-            line-height: 1.6; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
+            background: white; 
+            padding: 20mm 25mm; 
+            font-family: 'Times New Roman', serif; 
+            line-height: 1.6; 
+            color: black; 
+            font-size: 12pt; 
+            width: 210mm; 
+            min-height: 297mm;
+            box-sizing: border-box; 
+            position: relative;
         }
-        .kop-surat img { width: 100%; display: block; margin-bottom: 10px; }
+        .kop-surat img { width: 100%; display: block; margin-bottom: 20px; }
         .cap { text-transform: capitalize; } 
-        .row-data { display: flex; margin-bottom: 5px; align-items: flex-start; }
-        .label-data { width: 130px; flex-shrink: 0; }
-        .titik-dua { padding: 0 8px; flex-shrink: 0; }
-        .ttd-section { margin-top: 30px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
+        .row-data { display: flex; margin-bottom: 8px; align-items: flex-start; }
+        .label-data { width: 140px; flex-shrink: 0; }
+        .titik-dua { padding: 0 10px; flex-shrink: 0; }
+        .ttd-section { margin-top: 40px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
         .ttd-box { width: 250px; }
-        .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; margin-top: 5px; }
+        .nama-bawah { 
+            font-weight: bold; 
+            border-bottom: 1.5px solid black; 
+            padding: 0 5px; 
+            min-width: 180px; 
+            text-transform: capitalize; 
+            display: inline-block; 
+            margin-top: 5px; 
+        }
         .preview-footer { 
-            position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #eee; 
-            padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0;
+            position: sticky; 
+            bottom: 20px; 
+            width: 100%; 
+            max-width: 500px; 
+            background: rgba(255,255,255,0.9); 
+            backdrop-filter: blur(10px);
+            padding: 15px; 
+            display: flex; 
+            gap: 12px; 
+            box-sizing: border-box; 
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 600px) {
+            .container { padding: 15px; border-radius: 0; width: 100%; height: 100%; box-shadow: none; }
+            body { padding: 0; background: white; }
         }
     </style>
 </head>
@@ -67,30 +216,50 @@
 <div id="custom-alert">
     <div class="alert-content">
         <div class="alert-icon">⚠️</div>
-        <div class="alert-text">Oops! Harap isi semua data dan tanda tangan Anda.</div>
-        <button class="btn-alert-ok" onclick="closeAlert()">Siap!</button>
+        <div class="alert-text" id="alert-msg">Oops! Harap isi semua data dan tanda tangan Anda.</div>
+        <button class="btn-alert-ok" onclick="closeAlert()">Mengerti</button>
     </div>
 </div>
 
 <div class="container">
-    <div style="text-align: center; margin-bottom: 25px;">
-    <span style="font-size: 14px; font-weight: bold; color: #7f8c8d; display: block; margin-bottom: 5px;">FORM SURAT IZIN</span>
-    <span style="font-size: 24px; font-weight: 800; color: #2c3e50; display: block; letter-spacing: 1px;">GURU AZ-ZAHRO</span>
+    <div class="header-label">
+        <span class="sub">FORM SURAT IZIN</span>
+        <span class="main">GURU AZ-ZAHRO</span>
     </div>
 
-    <!-- Menambahkan enterkeyhint="done" pada kolom input -->
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder=" " enterkeyhint="done"></div>
-    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika" enterkeyhint="done"></div>
-    <div class="form-group" style="display: flex; gap: 10px;">
-        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin" enterkeyhint="done"></div>
-        <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl" enterkeyhint="done"></div>
+    <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Masukkan nama anda..." enterkeyhint="next">
     </div>
-    <div class="form-group"><label>Dikarenakan:</label><input type="text" id="alasan" placeholder="Sebutkan keterangan..." enterkeyhint="done"></div>
+    
+    <div class="form-group">
+        <label>Guru Mapel</label>
+        <input type="text" id="mapel" placeholder="Contoh: Matematika / Wali Kelas" enterkeyhint="next">
+    </div>
+
+    <div class="form-group" style="display: flex; gap: 15px;">
+        <div style="flex: 1;">
+            <label>Hari</label>
+            <input type="text" id="hari" placeholder="Senin" enterkeyhint="next">
+        </div>
+        <div style="flex: 1.5;">
+            <label>Tanggal Izin</label>
+            <input type="date" id="tgl">
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label>Alasan / Dikarenakan:</label>
+        <input type="text" id="alasan" placeholder="Sebutkan alasan ketidakhadiran..." enterkeyhint="done">
+    </div>
 
     <label>Tanda Tangan Digital</label>
-    <div class="sig-container"><canvas id="pad"></canvas></div>
+    <div class="sig-container">
+        <canvas id="pad"></canvas>
+    </div>
+    
     <div class="btn-row">
-        <button class="btn-clear" onclick="pad.clear()">Hapus TTD</button>
+        <button class="btn-clear" onclick="clearPad()">Hapus TTD</button>
         <button class="btn-preview" onclick="showPreview()">Preview Surat</button>
     </div>
 </div>
@@ -99,30 +268,47 @@
     <div class="modal-body">
         <div class="pdf-wrapper" id="zoom-wrapper">
             <div id="pdf-template">
-                <div class="kop-surat"><img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png"></div>
-                <div style="text-align: right; margin-bottom: 15px;">Bondowoso, <span id="outTglSkrg"></span></div>
-                <p>Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
-                <p>Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
-                <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
-                <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+                <div class="kop-surat">
+                    <img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png" alt="Kop Surat">
+                </div>
+
+                <div style="text-align: right; margin-bottom: 25px;">
+                    Bondowoso, <span id="outTglSkrg"></span>
+                </div>
+
+                <p style="margin-bottom: 20px;">Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
+
+                <p>Kepada Yth.<br>
+                <b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
+                <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>
+                di Tempat</p>
+
+                <p style="margin-top: 25px;"><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+
                 <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
                 
-                <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap"></span></div>
-                <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
+                <div style="margin-left: 20px; margin-bottom: 20px;">
+                    <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><b id="outNama" class="cap"></b></div>
+                    <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
+                </div>
 
-                <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
-                <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
-                <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Dikarenakan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+                <p>Melalui surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
+                
+                <div style="margin-left: 20px; margin-bottom: 20px;">
+                    <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
+                    <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
+                    <div class="row-data"><div class="label-data">Dikarenakan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+                </div>
 
-                <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
+                <p>Demikian surat permohonan izin ini saya sampaikan. Atas perhatian dan maklumnya Bapak/Ibu, saya haturkan terima kasih.</p>
+                
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
 
                 <div class="ttd-section">
                     <div class="ttd-box">
-                        <p style="margin-bottom: 0;">Hormat Saya,</p>
-                        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
-                            <img id="outTtd" style="max-width:160px; max-height:80px;">
+                        <p style="margin-bottom: 5px;">Hormat Saya,</p>
+                        <div style="height: 100px; display: flex; align-items: center; justify-content: center;">
+                            <img id="outTtd" style="max-width:200px; max-height:100px;">
                         </div>
                         <span class="nama-bawah" id="outNama2"></span>
                     </div>
@@ -132,16 +318,18 @@
         
         <div class="preview-footer">
             <button class="btn-clear" onclick="closePreview()">Batal</button>
-            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">SIMPAN</button>
+            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">UNDUH SEBAGAI PDF</button>
         </div>
     </div>
 </div>
 
 <script>
     const canvas = document.getElementById('pad');
-    const pad = new SignaturePad(canvas);
+    const pad = new SignaturePad(canvas, {
+        backgroundColor: 'rgba(255, 255, 255, 0)',
+        penColor: 'rgb(0, 0, 0)'
+    });
 
-    // Otomatis menutup keyboard saat menekan "Done" di HP
     document.querySelectorAll('input').forEach(input => {
         input.addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
@@ -150,83 +338,108 @@
         });
     });
 
-    function resize() {
+    function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         canvas.width = canvas.offsetWidth * ratio;
         canvas.height = canvas.offsetHeight * ratio;
         canvas.getContext("2d").scale(ratio, ratio);
-        pad.clear(); 
+        pad.clear();
     }
-    window.onresize = resize; resize();
+
+    window.addEventListener("resize", resizeCanvas);
+    resizeCanvas();
+
+    function clearPad() { pad.clear(); }
 
     function formatTanggal(d) {
         if (!d) return "";
-        return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return new Date(d).toLocaleDateString('id-ID', options);
     }
 
-    function showAlert() { document.getElementById('custom-alert').style.display = 'flex'; }
+    // Fungsi Pembantu: Kapital di awal kata
+    function toTitleCase(str) {
+        return str.toLowerCase().split(' ').map(function(word) {
+            return (word.charAt(0).toUpperCase() + word.slice(1));
+        }).join(' ');
+    }
+
+    function showAlert(msg) { 
+        document.getElementById('alert-msg').innerText = msg;
+        document.getElementById('custom-alert').style.display = 'flex'; 
+    }
+    
     function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
 
     function showPreview() {
-        const nama = document.getElementById('nama').value;
+        const nama = document.getElementById('nama').value.trim();
         const tgl = document.getElementById('tgl').value;
-        
-        if (!nama || !tgl || pad.isEmpty()) {
-            showAlert();
+        const mapel = document.getElementById('mapel').value.trim();
+        const hari = document.getElementById('hari').value.trim();
+        const alasan = document.getElementById('alasan').value.trim();
+
+        if (!nama || !tgl || !mapel || !hari || !alasan || pad.isEmpty()) {
+            showAlert("Mohon lengkapi semua kolom data dan sertakan tanda tangan.");
             return;
         }
 
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
-        document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
-        document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
+        document.getElementById('outMapel').textContent = mapel;
+        document.getElementById('outHari').textContent = hari;
         document.getElementById('outTgl').textContent = formatTanggal(tgl);
         document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
-        document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
+        document.getElementById('outAlasan').textContent = alasan;
         document.getElementById('outTtd').src = pad.toDataURL();
 
         document.getElementById('preview-modal').style.display = 'block';
+        document.body.style.overflow = 'hidden';
 
         const wrapper = document.getElementById('zoom-wrapper');
         const scale = (window.innerWidth * 0.95) / 794;
         wrapper.style.transform = scale < 1 ? `scale(${scale})` : `scale(1)`;
     }
 
-    function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
+    function closePreview() { 
+        document.getElementById('preview-modal').style.display = 'none'; 
+        document.body.style.overflow = 'auto';
+    }
 
     async function downloadPDF() {
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
         
-        const namaFile = document.getElementById('nama').value || "Tanpa_Nama";
-        const tanggalFile = document.getElementById('tgl').value || "";
+        // Formating nama file: Kapital Awal Kata
+        let rawNama = document.getElementById('nama').value.trim() || "Tanpa Nama";
+        let namaFile = toTitleCase(rawNama);
+        let tanggalFile = document.getElementById('tgl').value || "";
 
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
 
         btn.disabled = true;
-        btn.innerText = "Sedang Mengunduh...";
+        btn.innerText = "Memproses PDF...";
 
-        await new Promise(r => setTimeout(r, 600));
+        await new Promise(r => setTimeout(r, 800));
 
         const opt = {
             margin: 0,
             filename: `Surat Izin ${namaFile} ${tanggalFile}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
-            html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' }
+            image: { type: 'jpeg', quality: 1 },
+            html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
-        html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
-            const totalPages = pdf.internal.getNumberOfPages();
-            for (let i = totalPages; i > 1; i--) { pdf.deletePage(i); }
-        }).save().then(() => {
+        html2pdf().set(opt).from(el).save().then(() => {
             btn.disabled = false;
-            btn.innerText = "SIMPAN";
+            btn.innerText = "UNDUH SEBAGAI PDF";
             wrapper.style.transform = currentTransform;
             closePreview();
+        }).catch(err => {
+            btn.disabled = false;
+            btn.innerText = "Gagal, Coba Lagi";
+            wrapper.style.transform = currentTransform;
         });
     }
 </script>
