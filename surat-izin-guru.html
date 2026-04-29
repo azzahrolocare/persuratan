@@ -5,116 +5,143 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Generator Surat Izin Az-Zahro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
-        body { font-family: 'Times New Roman', Times, serif; background: #f4f4f4; padding: 20px; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-weight: bold; margin-bottom: 5px; }
-        input, textarea { width: 100%; padding: 8px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 4px; }
-        button { background: #28a745; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
-        button:hover { background: #218838; }
+        body { font-family: Arial, sans-serif; background: #f0f2f5; padding: 10px; margin: 0; }
+        .container { max-width: 550px; margin: auto; background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h2 { text-align: center; color: #2c3e50; font-size: 1.2rem; margin-bottom: 20px; }
+        .form-group { margin-bottom: 12px; }
+        label { display: block; font-size: 13px; font-weight: bold; margin-bottom: 4px; }
+        input, textarea { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; font-size: 14px; }
+        .sig-container { border: 1px solid #ccc; background: #fafafa; margin-top: 5px; border-radius: 4px; position: relative; }
+        canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
+        .btn-row { display: flex; gap: 10px; margin-top: 15px; }
+        button { flex: 1; padding: 10px; border: none; border-radius: 5px; cursor: pointer; font-weight: bold; }
+        .btn-clear { background: #e74c3c; color: white; }
+        .btn-save { background: #27ae60; color: white; }
         
-        /* Area Pratinjau Surat (disembunyikan dari layar, hanya untuk PDF) */
-        #surat-area { padding: 40px; line-height: 1.6; color: black; display: none; }
-        .header { text-align: left; margin-bottom: 30px; }
-        .isi-surat { margin-top: 20px; text-align: justify; }
-        .tanda-tangan { margin-top: 50px; float: right; text-align: center; }
+        /* Layout untuk PDF (Times New Roman agar resmi) */
+        #pdf-template { 
+            display: none; 
+            padding: 50px; 
+            font-family: 'Times New Roman', serif; 
+            line-height: 1.5; 
+            color: black; 
+            font-size: 12pt;
+        }
+        .ttd-box { float: right; text-align: center; margin-top: 30px; width: 200px; }
+        .ttd-img { max-width: 150px; height: 80px; object-fit: contain; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Form Input Surat Izin</h2>
+    <h2>Generator Surat Izin Az-Zahro</h2>
+    
     <div class="form-group">
-        <label>Nama Lengkap:</label>
-        <input type="text" id="inputNama" placeholder="Contoh: Ahmad Fauzi">
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Masukkan nama Anda">
     </div>
     <div class="form-group">
-        <label>Guru Mapel:</label>
-        <input type="text" id="inputMapel" placeholder="Contoh: Matematika">
+        <label>Guru Mata Pelajaran</label>
+        <input type="text" id="mapel" placeholder="Contoh: Matematika">
+    </div>
+    <div class="form-group" style="display: flex; gap: 10px;">
+        <div style="flex: 1;">
+            <label>Hari</label>
+            <input type="text" id="hari" placeholder="Senin">
+        </div>
+        <div style="flex: 2;">
+            <label>Tanggal</label>
+            <input type="date" id="tgl">
+        </div>
     </div>
     <div class="form-group">
-        <label>Hari:</label>
-        <input type="text" id="inputHari" placeholder="Contoh: Senin">
+        <label>Alasan Izin</label>
+        <textarea id="alasan" rows="2" placeholder="Tulis alasan tidak masuk"></textarea>
     </div>
-    <div class="form-group">
-        <label>Tanggal:</label>
-        <input type="date" id="inputTanggal">
+
+    <label>Tanda Tangan</label>
+    <div class="sig-container">
+        <canvas id="pad"></canvas>
     </div>
-    <div class="form-group">
-        <label>Alasan Izin:</label>
-        <textarea id="inputAlasan" rows="3" placeholder="Contoh: Sedang sakit atau ada keperluan keluarga"></textarea>
+    
+    <div class="btn-row">
+        <button class="btn-clear" onclick="pad.clear()">Hapus TTD</button>
+        <button class="btn-save" onclick="generate()">Simpan PDF</button>
     </div>
-    <button onclick="generatePDF()">Simpan Sebagai PDF</button>
 </div>
 
-<div id="surat-area">
-    <div class="header">
-        <p>Perihal: Surat Izin Tidak Masuk Sekolah [cite: 1]</p>
-        <p>Kepada Yth. [cite: 2]<br>
-        Pengasuh PP.SS Az-Zahro [cite: 3]<br>
-        Kepala Sekolah SMP dan SMK Az-Zahro [cite: 4]<br>
-        di Bondowoso [cite: 5]</p>
-    </div>
+<div id="pdf-template">
+    <p>Perihal: Surat Izin Tidak Masuk Sekolah</p>
+    <p>Kepada Yth.<br>
+    Pengasuh PP.SS Az-Zahro<br>
+    Kepala Sekolah SMP dan SMK Az-Zahro<br>
+    di Bondowoso</p>
 
-    <p>Assalamualaikum warahmatullahi wabarakatuh. [cite: 6]</p>
-    
-    <div class="isi-surat">
-        <p>Dengan hormat, saya yang bertanda tangan di bawah ini, [cite: 7]</p>
-        <table>
-            <tr><td width="150">Nama</td><td>: <span id="resNama"></span> [cite: 9]</td></tr>
-            <tr><td>Guru Mapel</td><td>: <span id="resMapel"></span> [cite: 10]</td></tr>
-        </table>
+    <p>Assalamualaikum warahmatullahi wabarakatuh.</p>
+    <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
+    <table style="width: 100%; margin-left: 10px;">
+        <tr><td width="120">Nama</td><td>: <span id="outNama"></span></td></tr>
+        <tr><td>Guru Mapel</td><td>: <span id="outMapel"></span></td></tr>
+    </table>
 
-        <p>Dengan datangnya surat ini, saya mohon izin untuk tidak masuk Sekolah pada: [cite: 11]</p>
-        <table>
-            <tr><td width="150">Hari</td><td>: <span id="resHari"></span> [cite: 12]</td></tr>
-            <tr><td>Tanggal</td><td>: <span id="resTanggal"></span> [cite: 13]</td></tr>
-            <tr><td>Dikarenakan</td><td>: <span id="resAlasan"></span> [cite: 15]</td></tr>
-        </table>
+    <p>Dengan datangnya surat ini, saya mohon izin untuk tidak masuk Sekolah pada:</p>
+    <table style="width: 100%; margin-left: 10px;">
+        <tr><td width="120">Hari</td><td>: <span id="outHari"></span></td></tr>
+        <tr><td>Tanggal</td><td>: <span id="outTgl"></span></td></tr>
+        <tr><td>Dikarenakan</td><td>: <span id="outAlasan"></span></td></tr>
+    </table>
 
-        <p>Atas perhatian yang diberikan, saya mengucapkan terima kasih. [cite: 17]</p>
-        <p>Wa'alaikumsalam warahmatullaahi wabarakaatuh. [cite: 18]</p>
-    </div>
+    <p>Atas perhatian yang diberikan, saya mengucapkan terima kasih.</p>
+    <p>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</p>
 
-    <div class="tanda-tangan">
-        <p>Hormat Saya, [cite: 20]</p>
-        <br><br><br>
-        <p>( <span id="resTtd"></span> ) </p>
+    <div class="ttd-box">
+        <p>Hormat Saya,</p>
+        <img id="outTtd" class="ttd-img">
+        <p>( <b id="outNama2"></b> )</p>
     </div>
 </div>
 
 <script>
-    function generatePDF() {
-        // Ambil data dari input
-        const nama = document.getElementById('inputNama').value;
-        const mapel = document.getElementById('inputMapel').value;
-        const hari = document.getElementById('inputHari').value;
-        const tanggal = document.getElementById('inputTanggal').value;
-        const alasan = document.getElementById('inputAlasan').value;
+    const canvas = document.getElementById('pad');
+    const pad = new SignaturePad(canvas);
 
-        // Masukkan ke template surat
-        document.getElementById('resNama').innerText = nama;
-        document.getElementById('resMapel').innerText = mapel;
-        document.getElementById('resHari').innerText = hari;
-        document.getElementById('resTanggal').innerText = tanggal;
-        document.getElementById('resAlasan').innerText = alasan;
-        document.getElementById('resTtd').innerText = nama;
+    // Auto-resize canvas
+    function resize() {
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext("2d").scale(ratio, ratio);
+    }
+    window.onresize = resize;
+    resize();
 
-        // Proses download PDF
-        const element = document.getElementById('surat-area');
-        element.style.display = 'block'; // Tampilkan sebentar untuk ditangkap library
+    function generate() {
+        if (pad.isEmpty()) return alert("Silakan tanda tangan!");
 
-        const opsi = {
-            margin: 1,
-            filename: `Surat_Izin_${nama}.pdf`,
-            image: { type: 'jpeg', quality: 0.98 },
+        // Set Data
+        document.getElementById('outNama').innerText = document.getElementById('nama').value;
+        document.getElementById('outNama2').innerText = document.getElementById('nama').value;
+        document.getElementById('outMapel').innerText = document.getElementById('mapel').value;
+        document.getElementById('outHari').innerText = document.getElementById('hari').value;
+        document.getElementById('outTgl').innerText = document.getElementById('tgl').value;
+        document.getElementById('outAlasan').innerText = document.getElementById('alasan').value;
+        document.getElementById('outTtd').src = pad.toDataURL();
+
+        const el = document.getElementById('pdf-template');
+        el.style.display = 'block';
+
+        const opt = {
+            margin: 0.8,
+            filename: 'Surat_Izin.pdf',
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: { scale: 2 },
             jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
         };
 
-        html2pdf().set(opsi).from(element).save().then(() => {
-            element.style.display = 'none'; // Sembunyikan kembali
+        html2pdf().set(opt).from(el).save().then(() => {
+            el.style.display = 'none';
         });
     }
 </script>
