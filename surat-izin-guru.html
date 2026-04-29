@@ -60,7 +60,7 @@
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder=" "></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
     </div>
-    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder=" "></textarea></div>
+    <div class="form-group"><label>Dikarenakan</label><textarea id="alasan" rows="2" placeholder=" "></textarea></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -84,10 +84,10 @@
                 <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap"></span></div>
                 <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
 
-                <p>Bermaksud memohon izin untuk tidak hadir di sekolah pada:</p>
+                <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
                 <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
                 <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Alasan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Dikarenakan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
 
                 <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
@@ -182,7 +182,7 @@
             for (let i = totalPages; i > 1; i--) { pdf.deletePage(i); }
         }).save().then(() => {
             btn.disabled = false;
-            btn.innerText = "UNDUH PDF (1 HALAMAN)";
+            btn.innerText = "SIMPAN";
             wrapper.style.transform = currentTransform;
             closePreview();
         });
