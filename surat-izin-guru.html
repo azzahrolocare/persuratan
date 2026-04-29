@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Surat Izin Az-Zahro</title>
+    <title>Surat Izin Guru Az-Zahro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
@@ -173,16 +173,15 @@
             return alert("Harap isi Nama, Tanggal, dan Tanda Tangan!");
         }
 
-        // Memasukkan data ke elemen output
-        document.getElementById('outNama').textContent = namaVal;
-        document.getElementById('outNama2').textContent = namaVal;
-        document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
-        document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
-        document.getElementById('outTgl').textContent = formatTanggal(tglVal);
-        document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
-        document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
+        // ISI DATA KE PREVIEW (Penting: isi semua ID outNama)
+        document.getElementById('outNama').innerText = namaVal;
+        document.getElementById('outNama2').innerText = namaVal; // Ini nama di bawah TTD
+        document.getElementById('outMapel').innerText = document.getElementById('mapel').value || "-";
+        document.getElementById('outHari').innerText = document.getElementById('hari').value || "-";
+        document.getElementById('outTgl').innerText = formatTanggal(tglVal);
+        document.getElementById('outTglSkrg').innerText = formatTanggal(new Date());
+        document.getElementById('outAlasan').innerText = document.getElementById('alasan').value || "-";
         
-        // Load gambar TTD
         const dataUri = pad.toDataURL();
         document.getElementById('outTtd').src = dataUri;
 
@@ -201,24 +200,27 @@
         btn.disabled = true;
         btn.innerText = "Memproses...";
 
+        // Jeda kecil untuk memastikan DOM benar-benar siap
+        await new Promise(resolve => setTimeout(resolve, 500));
+
         const opt = {
             margin: [0.3, 0.4, 0.3, 0.4],
-            filename: `Surat_Izin_${namaVal}.pdf`,
+            filename: `Surat_Izin_${namaVal.replace(/\s+/g, '_')}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
                 scale: 3, 
                 useCORS: true, 
-                letterRendering: true 
+                logging: false,
+                letterRendering: true
             },
             jsPDF: { unit: 'in', format: 'a4', orientation: 'portrait' }
         };
 
         try {
-            // Pastikan template terlihat sejenak untuk di-capture
             await html2pdf().set(opt).from(el).save();
         } catch (err) {
             console.error(err);
-            alert("Terjadi kesalahan saat menyimpan PDF");
+            alert("Gagal mengunduh PDF");
         } finally {
             btn.disabled = false;
             btn.innerText = "Simpan & Download PDF";
