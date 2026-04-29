@@ -17,10 +17,26 @@
         canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
         .btn-row { display: flex; gap: 10px; margin-top: 20px; }
         
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; }
         .btn-clear { background: #95a5a6; color: white; }
         .btn-preview { background: #3498db; color: white; }
         .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
+        button:active { transform: scale(0.98); }
+
+        /* --- STYLE NOTIFIKASI ESTETIK --- */
+        #custom-alert {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(4px); align-items: center; justify-content: center;
+        }
+        .alert-content {
+            background: white; padding: 30px; border-radius: 15px; text-align: center;
+            max-width: 320px; width: 80%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            animation: popIn 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
+        }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .alert-icon { font-size: 50px; color: #e74c3c; margin-bottom: 15px; }
+        .alert-text { color: #2c3e50; font-size: 16px; margin-bottom: 20px; line-height: 1.4; }
+        .btn-alert-ok { background: #3498db; color: white; border: none; padding: 10px 30px; border-radius: 20px; cursor: pointer; font-weight: bold; }
 
         /* Modal Preview */
         #preview-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
@@ -33,17 +49,13 @@
             line-height: 1.6; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
         }
         .kop-surat img { width: 100%; display: block; margin-bottom: 10px; }
-        
         .cap { text-transform: capitalize; } 
-
         .row-data { display: flex; margin-bottom: 5px; align-items: flex-start; }
         .label-data { width: 130px; flex-shrink: 0; }
         .titik-dua { padding: 0 8px; flex-shrink: 0; }
-
         .ttd-section { margin-top: 30px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
         .ttd-box { width: 250px; }
         .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; margin-top: 5px; }
-
         .preview-footer { 
             position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #eee; 
             padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0;
@@ -52,15 +64,23 @@
 </head>
 <body>
 
+<div id="custom-alert">
+    <div class="alert-content">
+        <div class="alert-icon">⚠️</div>
+        <div class="alert-text">Oops! Harap isi semua data dan tanda tangan Anda.</div>
+        <button class="btn-alert-ok" onclick="closeAlert()">Siap!</button>
+    </div>
+</div>
+
 <div class="container">
-    <h3 style="text-align: center;">FORM SURAT IZIN GURU AZ-ZAHRO</h3>
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder=" "></div>
-    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder=" "></div>
+    <h3 style="text-align: center;">FORM SURAT IZIN<br></BR>GURU AZ-ZAHRO</h3>
+    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Contoh: Ahmad Fauzi"></div>
+    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika"></div>
     <div class="form-group" style="display: flex; gap: 10px;">
-        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder=" "></div>
+        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin"></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
     </div>
-    <div class="form-group"><label>Dikarenakan:</label><textarea id="alasan" rows="2" placeholder=" "></textarea></div>
+    <div class="form-group"><label>Dikarenakan:</label><textarea id="alasan" rows="2" placeholder="Sebutkan alasan izin..."></textarea></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -130,15 +150,25 @@
         return new Date(d).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
+    // FUNGSI NOTIFIKASI
+    function showAlert() { document.getElementById('custom-alert').style.display = 'flex'; }
+    function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
+
     function showPreview() {
         const nama = document.getElementById('nama').value;
-        if (!nama || !document.getElementById('tgl').value || pad.isEmpty()) return alert("Harap isi semua data dan tanda tangan!");
+        const tgl = document.getElementById('tgl').value;
+        
+        // Menggunakan Custom Alert sebagai ganti alert()
+        if (!nama || !tgl || pad.isEmpty()) {
+            showAlert();
+            return;
+        }
 
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
         document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
         document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
-        document.getElementById('outTgl').textContent = formatTanggal(document.getElementById('tgl').value);
+        document.getElementById('outTgl').textContent = formatTanggal(tgl);
         document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
         document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
         document.getElementById('outTtd').src = pad.toDataURL();
@@ -157,7 +187,6 @@
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
         
-        // Ambil data untuk nama file
         const namaFile = document.getElementById('nama').value || "Tanpa_Nama";
         const tanggalFile = document.getElementById('tgl').value || "";
 
