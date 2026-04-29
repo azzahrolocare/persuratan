@@ -151,7 +151,6 @@
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
 
-    // FUNGSI LOAD DATA GURU & MAPEL KE DATALIST
     function inisialisasiAutosuggest() {
         const listGuru = document.getElementById('daftar-guru');
         if (typeof daftarNamaGuru !== 'undefined') {
@@ -161,7 +160,6 @@
                 listGuru.appendChild(opt);
             });
         }
-
         const listMapel = document.getElementById('daftar-mapel');
         if (typeof daftarMapel !== 'undefined') {
             daftarMapel.forEach(mapel => {
@@ -186,9 +184,7 @@
     }
 
     function toTitleCase(str) {
-        return str.toLowerCase().split(' ').map(word => {
-            return (word.charAt(0).toUpperCase() + word.slice(1));
-        }).join(' ');
+        return str.toLowerCase().split(' ').map(word => (word.charAt(0).toUpperCase() + word.slice(1))).join(' ');
     }
 
     document.querySelectorAll('input').forEach(input => {
@@ -237,38 +233,54 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    // FUNGSI BAGIKAN KE WHATSAPP (SEBAGAI GAMBAR)
+    // FUNGSI BAGIKAN KE WHATSAPP (TEKS + GAMBAR)
     async function shareToWhatsApp() {
         const btn = document.getElementById('btnShare');
         const el = document.getElementById('pdf-template');
-        const wrapper = document.getElementById('zoom-wrapper');
-        const namaMentah = document.getElementById('nama').value || "Guru";
-        const currentTransform = wrapper.style.transform;
+        const nama = document.getElementById('nama').value;
+        const mapel = document.getElementById('mapel').value;
+        const hari = document.getElementById('hari').value;
+        const tgl = formatTanggal(document.getElementById('tgl').value);
+        const alasan = document.getElementById('alasan').value;
 
-        wrapper.style.transform = "scale(1)";
+        const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nAlasan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Az-Zahro_`;
+
         btn.disabled = true;
         btn.innerText = "Memproses...";
 
         try {
-            const canvasImg = await html2canvas(el, { scale: 2, useCORS: true });
+            // Gunakan html2pdf internal worker untuk capture element
+            const opt = { margin: 0, filename: 'izin.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
+            const worker = html2pdf().set(opt).from(el);
+            const canvasImg = await worker.toCanvas().get('canvas');
+            
             const blob = await new Promise(resolve => canvasImg.toBlob(resolve, 'image/png'));
-            const file = new File([blob], `Surat_Izin_${namaMentah.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
+            const file = new File([blob], `Izin_${nama.replace(/\s+/g, '_')}.png`, { type: 'image/png' });
 
             if (navigator.canShare && navigator.canShare({ files: [file] })) {
                 await navigator.share({
                     files: [file],
-                    title: 'Surat Izin Guru',
-                    text: `Surat Izin Ketidakhadiran - ${namaMentah}`
+                    text: pesanTeks
                 });
             } else {
-                alert("Browser Anda tidak mendukung fitur berbagi langsung. Silakan unduh PDF saja.");
+                throw new Error("Share image not supported");
             }
         } catch (err) {
-            console.error(err);
+            // Jika gagal share gambar, fallback ke share TEKS SAJA
+            console.log("Gagal share gambar, beralih ke teks...");
+            if (navigator.share) {
+                await navigator.share({
+                    title: 'Surat Izin Guru',
+                    text: pesanTeks
+                });
+            } else {
+                // Fallback terakhir: Buka link WhatsApp Web langsung (hanya teks)
+                const url = `https://wa.me/?text=${encodeURIComponent(pesanTeks)}`;
+                window.open(url, '_blank');
+            }
         } finally {
             btn.disabled = false;
             btn.innerText = "BAGIKAN KE WA";
-            wrapper.style.transform = currentTransform;
         }
     }
 
@@ -276,7 +288,6 @@
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
-        
         const namaMentah = document.getElementById('nama').value || "Tanpa Nama";
         const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
         const tanggalFile = document.getElementById('tgl').value || "";
@@ -286,15 +297,12 @@
         btn.disabled = true;
         btn.innerText = "Sedang Mengunduh...";
 
-        await new Promise(r => setTimeout(r, 600));
-
         const opt = {
             margin: 0,
             filename: `Surat_Izin_${namaFile}_${tanggalFile}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: 'avoid-all' }
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
         };
 
         html2pdf().set(opt).from(el).toPdf().get('pdf').then(function (pdf) {
