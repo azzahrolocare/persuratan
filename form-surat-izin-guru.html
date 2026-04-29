@@ -78,7 +78,12 @@
     <span style="font-size: 24px; font-weight: 800; color: #2c3e50; display: block; letter-spacing: 1px;">GURU AZ-ZAHRO</span>
     </div>
 
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Tulis Nama Lengkap Anda" enterkeyhint="done"></div>
+    <div class="form-group">
+        <label>Nama Lengkap</label>
+        <input type="text" id="nama" placeholder="Tulis Nama atau Inisial" list="daftar-guru" autocomplete="off" enterkeyhint="done">
+        <datalist id="daftar-guru"></datalist>
+    </div>
+
     <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder="Contoh: Matematika" enterkeyhint="done"></div>
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Otomatis" readonly></div>
@@ -136,9 +141,24 @@
     </div>
 </div>
 
+<script src="guru.js"></script>
+
 <script>
     const canvas = document.getElementById('pad');
     const pad = new SignaturePad(canvas);
+
+    // FUNGSI LOAD DATA GURU KE DATALIST
+    function inisialisasiAutosuggest() {
+        const datalist = document.getElementById('daftar-guru');
+        if (typeof daftarNamaGuru !== 'undefined') {
+            daftarNamaGuru.forEach(nama => {
+                const option = document.createElement('option');
+                option.value = nama;
+                datalist.appendChild(option);
+            });
+        }
+    }
+    window.addEventListener('DOMContentLoaded', inisialisasiAutosuggest);
 
     // Fungsi Otomatis Hari
     function updateHari() {
@@ -218,7 +238,6 @@
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
         
-        // Memproses nama file agar Kapital di awal kata
         const namaMentah = document.getElementById('nama').value || "Tanpa Nama";
         const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
         const tanggalFile = document.getElementById('tgl').value || "";
