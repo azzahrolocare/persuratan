@@ -17,11 +17,10 @@
         canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
         .btn-row { display: flex; gap: 10px; margin-top: 20px; }
         
-        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+        button { flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; }
         .btn-clear { background: #95a5a6; color: white; }
         .btn-preview { background: #3498db; color: white; }
-        .btn-save { background: #27ae60; color: white; }
-        .btn-wa { background: #25D366; color: white; }
+        .btn-save { background: #27ae60; color: white; width: 100%; margin-top: 15px; }
 
         /* Modal Preview */
         #preview-modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); overflow-y: auto; }
@@ -31,22 +30,24 @@
         /* Template PDF */
         #pdf-template { 
             background: white; padding: 15mm 20mm; font-family: 'Times New Roman', Times, serif; 
-            line-height: 1.5; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
+            line-height: 1.6; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
         }
         .kop-surat img { width: 100%; display: block; margin-bottom: 10px; }
         
-        /* Auto Capitalize & Spacing */
-        .row-data { display: flex; margin-bottom: 4px; }
-        .label-data { width: 130px; flex-shrink: 0; }
-        .cap { text-transform: capitalize; } /* Membuat huruf kapital tiap awal kata */
+        /* Teks Otomatis Kapital Awal Kata */
+        .cap { text-transform: capitalize; } 
 
-        .ttd-section { margin-top: 25px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
+        .row-data { display: flex; margin-bottom: 5px; align-items: flex-start; }
+        .label-data { width: 130px; flex-shrink: 0; }
+        .titik-dua { padding: 0 8px; flex-shrink: 0; } /* Memberikan spasi otomatis di depan dan belakang : */
+
+        .ttd-section { margin-top: 30px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
         .ttd-box { width: 250px; }
-        .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; }
+        .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; margin-top: 5px; }
 
         .preview-footer { 
-            position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #f8f8f8; 
-            padding: 15px; display: flex; flex-wrap: wrap; gap: 10px; box-sizing: border-box; border-top: 1px solid #ddd;
+            position: sticky; bottom: 0; width: 100%; max-width: 800px; background: #eee; 
+            padding: 15px; display: flex; gap: 10px; box-sizing: border-box; border-radius: 8px 8px 0 0;
         }
     </style>
 </head>
@@ -54,13 +55,13 @@
 
 <div class="container">
     <h2>Form Surat Izin Az-Zahro</h2>
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="Contoh: rahmatullah"></div>
-    <div class="form-group"><label>Guru Mapel/Jabatan</label><input type="text" id="mapel" placeholder="Contoh: guru informatika"></div>
+    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="rahmatullah"></div>
+    <div class="form-group"><label>Guru Mapel/Jabatan</label><input type="text" id="mapel" placeholder="guru informatika"></div>
     <div class="form-group" style="display: flex; gap: 10px;">
         <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin"></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
     </div>
-    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder="Sakit / Ada keperluan keluarga"></textarea></div>
+    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder="Ada keperluan keluarga"></textarea></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -75,27 +76,32 @@
         <div class="pdf-wrapper" id="zoom-wrapper">
             <div id="pdf-template">
                 <div class="kop-surat"><img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png"></div>
-                <div style="text-align: right; margin-bottom: 10px;">Bondowoso, <span id="outTglSkrg"></span></div>
+                
+                <div style="text-align: right; margin-bottom: 15px;">Bondowoso, <span id="outTglSkrg"></span></div>
+                
                 <p>Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
                 <p>Kepada Yth.<br><b>Pengasuh PP.SS Az-Zahro</b><br><b>Kepala Sekolah SMP dan SMK Az-Zahro</b><br>di Tempat</p>
+
                 <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
                 <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
                 
-                <div class="row-data"><div class="label-data">Nama</div><span> : </span><span id="outNama" class="cap"></span></div>
-                <div class="row-data"><div class="label-data">Tugas/Jabatan</div><span> : </span><span id="outMapel" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Tugas/Jabatan</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
 
                 <p>Bermaksud memohon izin untuk tidak hadir di sekolah pada:</p>
-                <div class="row-data"><div class="label-data">Hari</div><span> : </span><span id="outHari" class="cap"></span></div>
-                <div class="row-data"><div class="label-data">Tanggal</div><span> : </span><span id="outTgl"></span></div>
-                <div class="row-data"><div class="label-data">Alasan</div><span> : </span><span id="outAlasan" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
+                <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
+                <div class="row-data"><div class="label-data">Alasan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
 
-                <p style="margin-top: 15px;">Demikian surat permohonan izin ini saya sampaikan. Atas perhatiannya, saya ucapkan terima kasih.</p>
+                <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan. Atas perhatiannya, saya ucapkan terima kasih.</p>
                 <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
 
                 <div class="ttd-section">
                     <div class="ttd-box">
                         <p style="margin-bottom: 0;">Hormat Saya,</p>
-                        <div style="height: 75px; display: flex; align-items: center; justify-content: center;"><img id="outTtd" style="max-width:150px; max-height:70px;"></div>
+                        <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                            <img id="outTtd" style="max-width:160px; max-height:80px;">
+                        </div>
                         <span class="nama-bawah" id="outNama2"></span>
                     </div>
                 </div>
@@ -103,9 +109,8 @@
         </div>
         
         <div class="preview-footer">
-            <button class="btn-clear" onclick="closePreview()">Batal</button>
-            <button class="btn-save" id="btnDownload" onclick="processPDF('download')">Unduh PDF</button>
-            <button class="btn-wa" onclick="processPDF('whatsapp')">Bagikan ke WA</button>
+            <button class="btn-clear" onclick="closePreview()">Batal / Edit</button>
+            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">UNDUH PDF (1 HALAMAN)</button>
         </div>
     </div>
 </div>
@@ -130,7 +135,7 @@
 
     function showPreview() {
         const nama = document.getElementById('nama').value;
-        if (!nama || !document.getElementById('tgl').value || pad.isEmpty()) return alert("Lengkapi data dan tanda tangan!");
+        if (!nama || !document.getElementById('tgl').value || pad.isEmpty()) return alert("Harap isi semua data dan tanda tangan!");
 
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
@@ -150,23 +155,22 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    async function processPDF(mode) {
+    async function downloadPDF() {
         const btn = document.getElementById('btnDownload');
         const el = document.getElementById('pdf-template');
-        const namaUser = document.getElementById('nama').value;
-        
         const wrapper = document.getElementById('zoom-wrapper');
+        
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
 
         btn.disabled = true;
-        btn.innerText = "Processing...";
+        btn.innerText = "Sedang Mengunduh...";
 
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, 600));
 
         const opt = {
             margin: 0,
-            filename: `Surat_Izin_${namaUser}.pdf`,
+            filename: `Surat_Izin_${document.getElementById('nama').value}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
@@ -178,13 +182,8 @@
             for (let i = totalPages; i > 1; i--) { pdf.deletePage(i); }
         }).save().then(() => {
             btn.disabled = false;
-            btn.innerText = "Unduh PDF";
+            btn.innerText = "UNDUH PDF (1 HALAMAN)";
             wrapper.style.transform = currentTransform;
-            
-            if(mode === 'whatsapp') {
-                const text = encodeURIComponent(`Halo, saya mengirimkan Surat Izin Ketidakhadiran atas nama ${namaUser}. File PDF sudah terunduh di perangkat saya.`);
-                window.open(`https://api.whatsapp.com/send?text=${text}`, '_blank');
-            }
             closePreview();
         });
     }
