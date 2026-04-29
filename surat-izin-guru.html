@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Generator Surat Izin Az-Zahro</title>
+    <title>Surat Izin Guru Az-Zahro</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
     <style>
@@ -34,12 +34,11 @@
         }
         .kop-surat img { width: 100%; display: block; margin-bottom: 10px; }
         
-        /* Teks Otomatis Kapital Awal Kata */
         .cap { text-transform: capitalize; } 
 
         .row-data { display: flex; margin-bottom: 5px; align-items: flex-start; }
         .label-data { width: 130px; flex-shrink: 0; }
-        .titik-dua { padding: 0 8px; flex-shrink: 0; } /* Memberikan spasi otomatis di depan dan belakang : */
+        .titik-dua { padding: 0 8px; flex-shrink: 0; }
 
         .ttd-section { margin-top: 30px; display: flex; flex-direction: column; align-items: flex-end; text-align: center; }
         .ttd-box { width: 250px; }
@@ -54,14 +53,14 @@
 <body>
 
 <div class="container">
-    <h2>Form Surat Izin Az-Zahro</h2>
-    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder="rahmatullah"></div>
-    <div class="form-group"><label>Guru Mapel/Jabatan</label><input type="text" id="mapel" placeholder="guru informatika"></div>
+    <h2>Form Surat Izin Guru Az-Zahro</h2>
+    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="nama" placeholder=" "></div>
+    <div class="form-group"><label>Guru Mapel</label><input type="text" id="mapel" placeholder=" "></div>
     <div class="form-group" style="display: flex; gap: 10px;">
-        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder="Senin"></div>
+        <div style="flex: 1;"><label>Hari</label><input type="text" id="hari" placeholder=" "></div>
         <div style="flex: 2;"><label>Tanggal Izin</label><input type="date" id="tgl"></div>
     </div>
-    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder="Ada keperluan keluarga"></textarea></div>
+    <div class="form-group"><label>Alasan Izin</label><textarea id="alasan" rows="2" placeholder=" "></textarea></div>
 
     <label>Tanda Tangan Digital</label>
     <div class="sig-container"><canvas id="pad"></canvas></div>
@@ -76,12 +75,9 @@
         <div class="pdf-wrapper" id="zoom-wrapper">
             <div id="pdf-template">
                 <div class="kop-surat"><img src="https://azzahrolocare.github.io/persuratan/Kop%20SMP%20dan%20SMK%20Az-Zahro.png"></div>
-                
                 <div style="text-align: right; margin-bottom: 15px;">Bondowoso, <span id="outTglSkrg"></span></div>
-                
                 <p>Perihal: <b>Surat Pemberitahuan Ketidakhadiran</b></p>
                 <p>Kepada Yth.<br><b>Pengasuh PP.SS Az-Zahro</b><br><b>Kepala Sekolah SMP dan SMK Az-Zahro</b><br>di Tempat</p>
-
                 <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
                 <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
                 
@@ -109,8 +105,8 @@
         </div>
         
         <div class="preview-footer">
-            <button class="btn-clear" onclick="closePreview()">Batal / Edit</button>
-            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">UNDUH PDF (1 HALAMAN)</button>
+            <button class="btn-clear" onclick="closePreview()">Batal</button>
+            <button class="btn-save" id="btnDownload" onclick="downloadPDF()">SIMPAN</button>
         </div>
     </div>
 </div>
@@ -160,6 +156,10 @@
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
         
+        // Ambil data untuk nama file
+        const namaFile = document.getElementById('nama').value || "Tanpa_Nama";
+        const tanggalFile = document.getElementById('tgl').value || "";
+
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
 
@@ -170,7 +170,7 @@
 
         const opt = {
             margin: 0,
-            filename: `Surat_Izin_${document.getElementById('nama').value}.pdf`,
+            filename: `Surat Izin ${namaFile} ${tanggalFile}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
