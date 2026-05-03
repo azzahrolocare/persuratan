@@ -239,7 +239,6 @@
 
     function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
 
-    // FUNGSI BARU: BAGIKAN TEKS SAJA
     function shareTextOnly() {
         const nama = document.getElementById('nama').value;
         const mapel = document.getElementById('mapel').value || "-";
@@ -331,7 +330,18 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
         
         const namaMentah = document.getElementById('nama').value || "Tanpa Nama";
         const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
-        const tanggalFile = document.getElementById('tgl').value || "";
+        const hariFile = document.getElementById('hari').value || "Hari";
+        
+        // Memformat Tanggal ke DD-MM-YYYY
+        const tglInput = document.getElementById('tgl').value;
+        let tglFormatted = "00-00-0000";
+        if (tglInput) {
+            const d = new Date(tglInput);
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear();
+            tglFormatted = `${day}-${month}-${year}`;
+        }
 
         const currentTransform = wrapper.style.transform;
         wrapper.style.transform = "scale(1)";
@@ -342,7 +352,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
         const opt = {
             margin: 0,
-            filename: `Surat_Izin_${namaFile}_${tanggalFile}.pdf`,
+            filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatted}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
