@@ -328,19 +328,22 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
         const el = document.getElementById('pdf-template');
         const wrapper = document.getElementById('zoom-wrapper');
         
-        const namaMentah = document.getElementById('nama').value || "Tanpa Nama";
+        const namaMentah = document.getElementById('nama').value || "Tanpa_Nama";
         const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
-        const hariFile = document.getElementById('hari').value || "Hari";
         
-        // Memformat Tanggal ke DD-MM-YYYY
+        // Bagian Penambahan Format Tanggal untuk Nama File
+        const hariFile = document.getElementById('hari').value || "Hari";
         const tglInput = document.getElementById('tgl').value;
-        let tglFormatted = "00-00-0000";
+        let tglFormatFile = "";
+        
         if (tglInput) {
-            const d = new Date(tglInput);
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const year = d.getFullYear();
-            tglFormatted = `${day}-${month}-${year}`;
+            const dateObj = new Date(tglInput);
+            const d = dateObj.getDate();
+            const m = dateObj.toLocaleDateString('id-ID', { month: 'long' });
+            const y = dateObj.getFullYear();
+            tglFormatFile = `${d}_${m}_${y}`;
+        } else {
+            tglFormatFile = "Tanpa_Tanggal";
         }
 
         const currentTransform = wrapper.style.transform;
@@ -352,7 +355,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
         const opt = {
             margin: 0,
-            filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatted}.pdf`,
+            filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatFile}.pdf`,
             image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { scale: 2, useCORS: true },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
