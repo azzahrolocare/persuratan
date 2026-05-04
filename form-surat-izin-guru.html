@@ -225,11 +225,11 @@
         document.getElementById('outNama2').textContent = nama; 
         document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
         
-        // Logika Perbaikan: Menghitung hari secara langsung agar tidak kosong/strip
+        // Perbaikan: Hitung hari langsung saat preview untuk memastikan data tidak kosong
         const dateObj = new Date(tgl);
         const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
         document.getElementById('outHari').textContent = daftarHari[dateObj.getDay()];
-
+        
         document.getElementById('outTgl').textContent = formatTanggal(tgl);
         document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
         document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
@@ -247,8 +247,17 @@
     function shareTextOnly() {
         const nama = document.getElementById('nama').value;
         const mapel = document.getElementById('mapel').value || "-";
-        const hari = document.getElementById('hari').value || "-";
-        const tgl = formatTanggal(document.getElementById('tgl').value);
+        
+        // Ambil hari langsung dari tanggal input
+        const tglValue = document.getElementById('tgl').value;
+        let hari = "-";
+        if(tglValue) {
+            const dateObj = new Date(tglValue);
+            const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            hari = daftarHari[dateObj.getDay()];
+        }
+        
+        const tgl = formatTanggal(tglValue);
         const alasanRaw = document.getElementById('alasan').value || "-";
         const alasan = toTitleCase(alasanRaw);
         const tglSekarang = formatTanggal(new Date());
@@ -293,8 +302,17 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
         
         const nama = document.getElementById('nama').value;
         const mapel = document.getElementById('mapel').value || "-";
-        const hari = document.getElementById('hari').value || "-";
-        const tgl = formatTanggal(document.getElementById('tgl').value);
+        
+        // Hitung hari langsung
+        const tglValue = document.getElementById('tgl').value;
+        let hari = "-";
+        if(tglValue) {
+            const dateObj = new Date(tglValue);
+            const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            hari = daftarHari[dateObj.getDay()];
+        }
+
+        const tgl = formatTanggal(tglValue);
         let alasanRaw = document.getElementById('alasan').value || "-";
         const alasan = toTitleCase(alasanRaw);
 
@@ -334,15 +352,24 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
         const wrapper = document.getElementById('zoom-wrapper');
         
         const namaMentah = document.getElementById('nama').value || "Tanpa_Nama";
-        const namaFile = toTitleCase(namaMentah).replace(/\s+/g, '_'); 
+        
+        // Penamaan File: Gelar menjadi kapital (contoh: S.pd menjadi S.Pd atau s.e menjadi S.E)
+        let namaFile = toTitleCase(namaMentah)
+            .replace(/\b([a-z])\.([a-z]{1,2})\b/gi, function(match, p1, p2) {
+                return p1.toUpperCase() + "." + p2.charAt(0).toUpperCase() + p2.slice(1);
+            })
+            .replace(/\s+/g, '_');
         
         // Bagian Penambahan Format Tanggal untuk Nama File
-        const hariFile = document.getElementById('hari').value || "Hari";
         const tglInput = document.getElementById('tgl').value;
         let tglFormatFile = "";
+        let hariFile = "Hari";
         
         if (tglInput) {
             const dateObj = new Date(tglInput);
+            const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+            hariFile = daftarHari[dateObj.getDay()];
+            
             const d = dateObj.getDate();
             const m = dateObj.toLocaleDateString('id-ID', { month: 'long' });
             const y = dateObj.getFullYear();
