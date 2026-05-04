@@ -224,7 +224,12 @@
         document.getElementById('outNama').textContent = nama;
         document.getElementById('outNama2').textContent = nama; 
         document.getElementById('outMapel').textContent = document.getElementById('mapel').value || "-";
-        document.getElementById('outHari').textContent = document.getElementById('hari').value || "-";
+        
+        // Logika Perbaikan: Menghitung hari secara langsung agar tidak kosong/strip
+        const dateObj = new Date(tgl);
+        const daftarHari = ["Minggu", "Senin", "Selasa", "Rabu", "Kamis", "Jumat", "Sabtu"];
+        document.getElementById('outHari').textContent = daftarHari[dateObj.getDay()];
+
         document.getElementById('outTgl').textContent = formatTanggal(tgl);
         document.getElementById('outTglSkrg').textContent = formatTanggal(new Date());
         document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
