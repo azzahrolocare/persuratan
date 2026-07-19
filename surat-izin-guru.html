@@ -62,8 +62,15 @@
         
         /* Gaya Khusus Konten Template Cetak PDF (Dikunci ke Ukuran Kertas F4: 215mm x 330mm) */
         #pdf-template { 
-            background: white; padding: 20mm 20mm; font-family: 'Times New Roman', Times, serif; 
-            line-height: 1.6; color: black; font-size: 12pt; width: 215mm; min-height: 330mm; box-sizing: border-box; 
+            background: white; 
+            padding: 5mm 15mm 15mm 15mm; /* Mengurangi padding atas agar KOP berada di ujung atas lembaran */
+            font-family: 'Times New Roman', Times, serif; 
+            line-height: 1.6; 
+            color: black; 
+            font-size: 12pt; 
+            width: 215mm; 
+            min-height: 330mm; 
+            box-sizing: border-box; 
         }
         .kop-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .kop-logo-kiri { width: 65px; height: auto; }
@@ -95,11 +102,11 @@
 </head>
 <body class="bg-[#111827] min-h-screen flex justify-center items-start text-gray-800 antialiased p-0 sm:p-4">
 
-    <!-- Container Utama Pemaksa Tampilan HP (Maksimal Lebar Layar Smartphone) -->
+    <!-- Container Utama Pemaksa Tampilan HP -->
     <div class="w-full max-w-md min-h-screen bg-[#f8fafc] flex flex-col justify-between shadow-2xl relative overflow-x-hidden sm:min-h-[850px] sm:rounded-3xl sm:my-4">
         
         <div>
-            <!-- Overlay Alert Kustom Bergaya PopIn Elegan (Tema Emerald) -->
+            <!-- Overlay Alert Kustom Bergaya PopIn Elegan -->
             <div id="custom-alert" class="absolute inset-0 bg-black/70 backdrop-blur-md z-50 p-4 flex justify-center items-center">
                 <div class="bg-white rounded-3xl max-w-xs w-full shadow-2xl border border-gray-100 p-6 text-center animate-in fade-in zoom-in-95 duration-200">
                     <div class="mx-auto flex items-center justify-center h-14 w-14 rounded-full bg-amber-50 border border-amber-200 mb-4">
@@ -198,12 +205,12 @@
             </main>
         </div>
 
-        <!-- Modal Review & Cetak Dokumen PDF/WhatsApp -->
+        <!-- Modal Review & Cetak Dokumen PDF -->
         <div id="preview-modal" class="absolute inset-0 bg-black/90 z-50 p-3 flex flex-col justify-between items-center h-full overflow-hidden sm:rounded-3xl">
-            <!-- Wrapper Preview dengan Scroll Internal agar tidak menenggelamkan tombol -->
-            <div class="w-full flex-grow overflow-y-auto flex justify-center items-start pt-2 pb-3" style="max-height: calc(100vh - 130px);">
+            <!-- Wrapper Preview: Disesuaikan agar muat 1 layar penuh di HP tanpa scroll dokumen -->
+            <div class="w-full flex-grow overflow-hidden flex justify-center items-center py-2" style="max-height: calc(100vh - 120px);">
                 <!-- Dokumen Preview Kontainer -->
-                <div class="bg-white shadow-2xl overflow-x-auto rounded-lg" id="zoom-wrapper" style="transform-origin: top center;">
+                <div class="bg-white shadow-2xl rounded-lg overflow-hidden" id="zoom-wrapper" style="transform-origin: center center;">
                     <div id="pdf-template">
                         <!-- Kop Surat Dengan Struktur Teks Satu Baris -->
                         <div class="kop-container">
@@ -216,7 +223,7 @@
                             </div>
                             <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
                         </div>
-                        <!-- Box Informasi Sekretariat Satu Baris dengan Jarak Padding Tipis -->
+                        <!-- Box Informasi Sekretariat Satu Baris -->
                         <div class="kop-info-sekretariat">
                             <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
                         </div>
@@ -257,7 +264,7 @@
                 </div>
             </div>
             
-            <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ (Terkunci Statis di Bawah Layar Modal Tanpa Scroll) -->
+            <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ -->
             <div class="w-full bg-white/95 backdrop-blur-md p-3 rounded-2xl grid grid-cols-2 gap-2 box-border shadow-xl border border-slate-200/50 flex-shrink-0 z-50">
                 <button class="px-2 py-3 bg-slate-500 hover:bg-slate-600 text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="closePreview()">
                     <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
@@ -283,7 +290,7 @@
                         <span class="font-serif-custom font-bold text-xs tracking-wide">Sistem Persuratan Lembaga</span>
                     </div>
                     <p class="text-[10px] text-slate-300 leading-relaxed opacity-90">
-                        Aplikasi digital terintegrasi untuk mempermudah tertib administrasi, manajemen perizinan, dan pembuatan dokumen pemberitahuan ketidakhadiran dewan guru secara instan[cite: 1].
+                        Aplikasi digital terintegrasi untuk mempermudah tertib administrasi, manajemen perizinan, dan pembuatan dokumen pemberitahuan ketidakhadiran dewan guru secara instan.
                     </p>
                 </div>
                 <div class="grid grid-cols-1 gap-2">
@@ -309,7 +316,7 @@
 
     </div>
 
-    <!-- Logic Script Asli (Tanpa Ada Logika yang Dikurangi atau Diubah) -->
+    <!-- Logic Script Asli -->
     <script src="guru.js"></script>
 
     <script>
@@ -398,10 +405,16 @@
 
             document.getElementById('preview-modal').style.display = 'flex';
 
+            // Skrip Autoscaling Baru: Memaksa dokumen kertas F4 masuk ke 1 layar penuh HP tanpa merusak aspek rasio asli
             const wrapper = document.getElementById('zoom-wrapper');
-            const targetWidth = window.innerWidth > 448 ? 420 : (window.innerWidth * 0.90);
-            const scale = targetWidth / 794; 
-            wrapper.style.transform = scale < 1 ? `scale(${scale})` : `scale(1)`;
+            const availableHeight = window.innerHeight - 150; // Menyediakan ruang untuk tombol aksi bawah
+            const scaleHeight = availableHeight / 1247; // Tinggi asli template F4 adalah ~1247px
+            const scaleWidth = (window.innerWidth * 0.92) / 812; // Lebar asli template F4 adalah ~812px
+            
+            // Mengambil nilai skala terkecil agar dokumen pas sempurna dalam satu layar penuh
+            const finalScale = Math.min(scaleHeight, scaleWidth);
+            wrapper.style.transform = `scale(${finalScale})`;
+            
             lucide.createIcons();
         }
 
@@ -544,6 +557,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
             await new Promise(r => setTimeout(r, 600));
 
+            // Konfigurasi html2pdf: margin diset ke 0 agar KOP menempel sempurna di sisi atas halaman fisik
             const opt = {
                 margin: 0,
                 filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatFile}.pdf`,
@@ -575,7 +589,6 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
       }
     </script>
     
-    <!-- Render Icon Lucide Awal -->
     <script>
         lucide.createIcons();
     </script>
