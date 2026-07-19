@@ -104,13 +104,13 @@
         .ttd-box { width: 230px; }
         .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 10px; min-width: 150px; text-transform: capitalize; display: inline-block; margin-top: 2px; }
         
-        /* Wadah skala diubah posisinya agar rapi secara vertikal */
+        /* Penyelarasan letak skala atas */
         .preview-scale-holder {
             display: flex;
             justify-content: center;
             align-items: flex-start;
             width: 100%;
-            padding-top: 10px;
+            padding-top: 5px;
         }
     </style>
 </head>
@@ -219,72 +219,79 @@
             </main>
         </div>
 
-        <!-- MODAL PREVIEW DENGAN SCROLL DAN TOMBOL STICKY FIXED FIXES -->
-        <div id="preview-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col h-full overflow-hidden sm:rounded-3xl">
+        <!-- MODAL PREVIEW YANG SUDAH DI-CROP JARAK BAWAHNYA -->
+        <div id="preview-modal" class="absolute inset-0 bg-black/95 z-50 flex flex-col h-full overflow-hidden sm:rounded-3xl">
             
-            <!-- Area Scroll Dokumen Putih (Diberi padding bottom ekstra 120px agar isi kertas tidak tertutup tombol sticky) -->
+            <!-- Container Scroll Alami -->
             <div class="w-full flex-grow overflow-y-auto p-3 box-border pb-32">
                 <div class="preview-scale-holder">
-                    <!-- Dokumen Utama (Ukuran F4 Asli: Lebar 215mm (~812px), Tinggi 330mm (~1247px)) -->
-                    <div class="bg-white shadow-2xl rounded-sm overflow-hidden flex-shrink-0" id="zoom-wrapper" style="transform-origin: top center; width: 215mm; height: 330mm;">
-                        <div id="pdf-template">
-                            <!-- Kop Surat -->
-                            <div class="kop-container">
-                                <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
-                                <div class="kop-teks">
-                                    <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
-                                    <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
-                                    <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
-                                    <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
-                                </div>
-                                <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
-                            </div>
-                            
-                            <div class="kop-info-sekretariat">
-                                <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
-                            </div>
-                            <div class="kop-garis-bawah"></div>
-
-                            <!-- Bagian Judul Surat -->
-                            <div class="judul-surat-container">
-                                <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
-                            </div>
-
-                            <p class="mb-3">Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
-                            <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
-                            
-                            <p class="mb-3"><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
-                            <p class="mb-2">With respect, I the undersigned below:</p>
-                            
-                            <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap font-bold"></span></div>
-                            <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
-
-                            <p class="my-3">Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
-                            
-                            <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
-                            <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                            <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap font-bold"></span></div>
-
-                            <p style="margin-top: 20px;" class="mb-3">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
-                            <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
-
-                            <!-- Tanda Tangan -->
-                            <div class="ttd-section">
-                                <div class="ttd-box">
-                                    <p style="margin-bottom: 4px;">Bondowoso, <span id="outTglSkrg"></span></p>
-                                    <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
-                                    <div style="height: 75px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
-                                        <img id="outTtd" style="max-width:150px; max-height:75px; object-fit: contain;">
+                    
+                    <!-- KONTEN CROPPER: Memotong sisa tinggi kosong kertas putih agar mepet ke tombol -->
+                    <div id="crop-container" class="overflow-hidden bg-white shadow-2xl rounded-sm flex-shrink-0" style="width: 215mm; height: 180mm;">
+                        
+                        <!-- Dokumen Murni F4 Asli (Akan dilepas dari cropper secara otomatis saat diunduh PDF) -->
+                        <div id="zoom-wrapper" style="transform-origin: top center; width: 215mm; height: 330mm;">
+                            <div id="pdf-template">
+                                <!-- Kop Surat -->
+                                <div class="kop-container">
+                                    <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
+                                    <div class="kop-teks">
+                                        <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
+                                        <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
+                                        <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
+                                        <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
                                     </div>
-                                    <span class="nama-bawah" id="outNama2"></span>
+                                    <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
+                                </div>
+                                
+                                <div class="kop-info-sekretariat">
+                                    <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
+                                </div>
+                                <div class="kop-garis-bawah"></div>
+
+                                <!-- Bagian Judul Surat -->
+                                <div class="judul-surat-container">
+                                    <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
+                                </div>
+
+                                <p class="mb-3">Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
+                                <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
+                                
+                                <p class="mb-3"><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+                                <p class="mb-2">With respect, I the undersigned below:</p>
+                                
+                                <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap font-bold"></span></div>
+                                <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
+
+                                <p class="my-3">Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
+                                
+                                <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
+                                <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
+                                <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap font-bold"></span></div>
+
+                                <p style="margin-top: 20px;" class="mb-3">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
+                                <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
+
+                                <!-- Tanda Tangan -->
+                                <div class="ttd-section">
+                                    <div class="ttd-box">
+                                        <p style="margin-bottom: 4px;">Bondowoso, <span id="outTglSkrg"></span></p>
+                                        <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
+                                        <div style="height: 75px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                                            <img id="outTtd" style="max-width:150px; max-height:75px; object-fit: contain;">
+                                        </div>
+                                        <span class="nama-bawah" id="outNama2"></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
+
                     </div>
+
                 </div>
             </div>
             
-            <!-- Panel Aksi Kontrol Bawah (FIXED Kunci Menempel Kokoh di Layar Paling Bawah HP) -->
+            <!-- Panel Aksi Kontrol Bawah (Fixed Posisi Menempel Kokoh di Layar Paling Bawah HP) -->
             <div class="absolute bottom-0 left-0 right-0 bg-white/95 backdrop-blur-md p-3.5 rounded-t-3xl grid grid-cols-2 gap-2 box-border shadow-[0_-10px_25px_rgba(0,0,0,0.3)] border-t border-slate-200 z-50">
                 <button class="px-2 py-3 bg-slate-500 hover:bg-slate-600 text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="closePreview()">
                     <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
@@ -425,21 +432,26 @@
 
             document.getElementById('preview-modal').style.display = 'flex';
 
-            // DYNAMIC SCALING MENGGUNAKAN INDEKS LEBAR HP (Akurat Mengunci Sisi Kiri-Kanan)
+            // DYNAMIC SCALING DAN AUTO CROP UNTUK MEMANGKAS JARAK BAWAH
             const wrapper = document.getElementById('zoom-wrapper');
+            const cropContainer = document.getElementById('crop-container');
             const holder = document.querySelector('.preview-scale-holder');
             
-            const f4Width = 812; // Ukuran pixel lebar dokumen asli F4
+            const f4Width = 812; // 215mm dalam px
             const maxAvailableWidth = holder.clientWidth;
-            
-            // Dapatkan rasio pas sisi kanan-kiri
-            const perfectScale = (maxAvailableWidth / f4Width) * 0.96; // menyisakan 4% margin aman samping
+            const perfectScale = (maxAvailableWidth / f4Width) * 0.96; 
 
+            // Atur skala lembar kerja murni F4
             wrapper.style.transform = `scale(${perfectScale})`;
+            wrapper.style.marginBottom = "0px";
+
+            // Hitung tinggi asli surat terisi (Kop hingga Nama TTD terbawah) = ~680px
+            // Kalikan dengan skala agar membungkus ketat bagian bawah surat
+            const suratTerisiHeight = 680 * perfectScale;
             
-            // Beri margin bottom negatif dinamis agar scroll-container mendeteksi tinggi dokumen asli setelah di-scale
-            const scaledHeight = 1247 * perfectScale;
-            wrapper.style.marginBottom = `calc(${scaledHeight}px - 1247px)`;
+            // Set ukuran pembungkus luar agar memotong sisa putih di bawah tanda tangan
+            cropContainer.style.width = `${maxAvailableWidth * 0.96}px`;
+            cropContainer.style.height = `${suratTerisiHeight}px`;
 
             lucide.createIcons();
         }
@@ -500,6 +512,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
             const btn = document.getElementById('btnShare');
             const el = document.getElementById('pdf-template');
             const wrapper = document.getElementById('zoom-wrapper');
+            const cropContainer = document.getElementById('crop-container');
             
             const nama = document.getElementById('nama').value;
             const mapel = document.getElementById('mapel').value || "-";
@@ -517,10 +530,15 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
             const pesanTeks = `*SURAT IZIN GURU AZ-ZAHRO*\n\nNama: *${nama}*\nMapel: ${mapel}\nHari/Tgl: ${hari}, ${tgl}\nKeterangan: ${alasan}\n\n_Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
+            // Reset pembungkus sementara agar kualitas gambar share penuh F4 murni
             const currentTransform = wrapper.style.transform;
-            const currentMargin = wrapper.style.marginBottom;
+            const currentCropW = cropContainer.style.width;
+            const currentCropH = cropContainer.style.height;
+            
+            cropContainer.style.width = "215mm";
+            cropContainer.style.height = "330mm";
             wrapper.style.transform = "scale(1)";
-            wrapper.style.marginBottom = "0px";
+            
             btn.disabled = true;
             btn.innerText = "Memproses...";
 
@@ -544,7 +562,8 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
                 btn.disabled = false;
                 btn.innerText = "BAGIKAN GAMBAR";
                 wrapper.style.transform = currentTransform;
-                wrapper.style.marginBottom = currentMargin;
+                cropContainer.style.width = currentCropW;
+                cropContainer.style.height = currentCropH;
             }
         }
 
@@ -552,6 +571,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
             const btn = document.getElementById('btnDownload');
             const el = document.getElementById('pdf-template');
             const wrapper = document.getElementById('zoom-wrapper');
+            const cropContainer = document.getElementById('crop-container');
             
             const namaMentah = document.getElementById('nama').value || "Tanpa_Nama";
             
@@ -578,11 +598,15 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
                 tglFormatFile = "Tanpa_Tanggal";
             }
 
+            // Lepas pembungkus cropper saat unduh agar PDF tetap berukuran F4 standar utuh 
             const currentTransform = wrapper.style.transform;
-            const currentMargin = wrapper.style.marginBottom;
+            const currentCropW = cropContainer.style.width;
+            const currentCropH = cropContainer.style.height;
             
+            cropContainer.style.width = "215mm";
+            cropContainer.style.height = "330mm";
             wrapper.style.transform = "scale(1)";
-            wrapper.style.marginBottom = "0px";
+            
             btn.disabled = true;
             btn.innerText = "Sedang Mengunduh...";
 
@@ -604,7 +628,8 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
                 btn.disabled = false;
                 btn.innerText = "SIMPAN PDF";
                 wrapper.style.transform = currentTransform;
-                wrapper.style.marginBottom = currentMargin;
+                cropContainer.style.width = currentCropW;
+                cropContainer.style.height = currentCropH;
                 closePreview();
             });
         }
