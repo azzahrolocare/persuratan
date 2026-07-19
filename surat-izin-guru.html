@@ -91,219 +91,222 @@
         .nama-bawah { font-weight: bold; border-bottom: 1.5px solid black; padding: 0 15px; min-width: 160px; text-transform: capitalize; display: inline-block; margin-top: 5px; }
     </style>
 </head>
-<body class="bg-gray-50 min-h-screen flex flex-col justify-between text-gray-800">
+<body class="bg-gray-800 min-h-screen flex justify-center items-start text-gray-800 antialiased">
 
-    <div>
-        <!-- Overlay Alert Kustom Bergaya PopIn Elegan (Tema Emerald) -->
-        <div id="custom-alert" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 p-4 flex justify-center items-center">
-            <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 text-center animate-in fade-in zoom-in-95 duration-200">
-                <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-50 border border-amber-200 mb-4">
-                    <i data-lucide="alert-triangle" class="w-10 h-10 text-amber-600"></i>
+    <!-- Container Utama Pemaksa Tampilan HP (Maksimal Lebar Layar Smartphone) -->
+    <div class="w-full max-w-md min-h-screen bg-gray-50 flex flex-col justify-between shadow-2xl relative overflow-x-hidden">
+        
+        <div>
+            <!-- Overlay Alert Kustom Bergaya PopIn Elegan (Tema Emerald) -->
+            <div id="custom-alert" class="absolute inset-0 bg-black/60 backdrop-blur-sm z-50 p-4 flex justify-center items-center">
+                <div class="bg-white rounded-3xl max-w-sm w-full shadow-2xl border border-gray-100 p-6 text-center animate-in fade-in zoom-in-95 duration-200">
+                    <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-amber-50 border border-amber-200 mb-4">
+                        <i data-lucide="alert-triangle" class="w-10 h-10 text-amber-600"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-gray-900 font-serif-custom mb-2">Peringatan</h3>
+                    <p class="text-sm text-gray-600 px-2 mb-6">Oops! Harap isi semua data dan tanda tangan Anda terlebih dahulu.</p>
+                    <button class="w-full py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-sm rounded-xl transition-all active:scale-95" onclick="closeAlert()">
+                        Siap, Mengerti!
+                    </button>
                 </div>
-                <h3 class="text-xl font-bold text-gray-900 font-serif-custom mb-2">Peringatan</h3>
-                <p class="text-sm text-gray-600 px-2 mb-6">Oops! Harap isi semua data dan tanda tangan Anda terlebih dahulu.</p>
-                <button class="w-full py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-sm rounded-xl transition-all active:scale-95" onclick="closeAlert()">
-                    Siap, Mengerti!
-                </button>
             </div>
+
+            <!-- Navigasi Utama Bergaya PSAJ -->
+            <nav class="sticky top-0 z-40 bg-emerald-deep/95 backdrop-blur-md shadow-lg border-b border-emerald-medium/50 text-white">
+                <div class="max-w-7xl mx-auto px-4 h-20 flex items-center justify-between gap-4">
+                    <div class="flex items-center gap-3 min-w-0">
+                        <div class="p-2 bg-emerald-medium rounded-xl border border-emerald-light/20 flex-shrink-0">
+                            <i data-lucide="file-text" class="w-5 h-5 text-gold-accent"></i>
+                        </div>
+                        <div>
+                            <span class="text-[10px] font-mono font-bold text-gold-accent/80 block tracking-widest uppercase">Formulir Digital</span>
+                            <h1 class="text-base font-serif-custom font-bold tracking-wide truncate">
+                                Surat Izin Guru Az-Zahro
+                            </h1>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+
+            <!-- Formulir Penginputan Utama -->
+            <main class="px-4 mt-6 mb-12">
+                <div class="bg-white rounded-3xl p-5 shadow-sm border border-gray-100">
+                    <div class="flex items-center gap-2.5 mb-6 border-b border-gray-100 pb-4">
+                        <i data-lucide="sliders-horizontal" class="w-5 h-5 text-emerald-deep"></i>
+                        <h5 class="text-base font-bold text-gray-900 font-serif-custom">Lengkapi Informasi Permohonan Izin</h5>
+                    </div>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="user" class="w-4 h-4 text-gray-400"></i> Nama Lengkap
+                            </label>
+                            <input type="text" id="nama" placeholder="Tulis Nama atau Inisial" list="daftar-guru" autocomplete="off" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
+                            <datalist id="daftar-guru"></datalist>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="book-open" class="w-4 h-4 text-gray-400"></i> Guru Mapel
+                            </label>
+                            <input type="text" id="mapel" placeholder="Contoh: Matematika" list="daftar-mapel" autocomplete="off" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
+                            <datalist id="daftar-mapel"></datalist>
+                        </div>
+
+                        <div class="grid grid-cols-3 gap-3">
+                            <div class="col-span-1">
+                                <label class="block text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                    <i data-lucide="calendar-days" class="w-3.5 h-3.5 text-gray-400"></i> Hari
+                                </label>
+                                <input type="text" id="hari" placeholder="Otomatis" readonly class="w-full bg-gray-100 border border-gray-200 rounded-xl px-3 py-3 text-gray-500 text-sm font-medium outline-none text-center">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-xs font-semibold text-gray-700 mb-2 flex items-center gap-1">
+                                    <i data-lucide="calendar" class="w-3.5 h-3.5 text-gray-400"></i> Tanggal Izin
+                                </label>
+                                <input type="date" id="tgl" onchange="updateHari()" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-3 py-3 text-gray-900 text-sm focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="help-circle" class="w-4 h-4 text-gray-400"></i> Keterangan / Alasan
+                            </label>
+                            <input type="text" id="alasan" placeholder="Sebutkan keterangan ketidakhadiran..." enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
+                                <i data-lucide="pen-tool" class="w-4 h-4 text-gray-400"></i> Tanda Tangan Digital
+                            </label>
+                            <div class="border border-gray-200 bg-gray-50 rounded-2xl overflow-hidden shadow-inner focus-within:border-emerald-deep transition-all">
+                                <canvas id="pad" class="w-full h-40 bg-white/60"></canvas>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <button class="inline-flex items-center justify-center gap-2 px-4 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-xl transition-all active:scale-[0.98]" onclick="pad.clear()">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i> Hapus TTD
+                            </button>
+                            <button class="inline-flex items-center justify-center gap-2 px-4 py-3.5 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98]" onclick="showPreview()">
+                                <i data-lucide="eye" class="w-4 h-4 text-gold-accent"></i> Preview Surat
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </main>
         </div>
 
-        <!-- Navigasi Utama Bergaya PSAJ -->
-        <nav class="sticky top-0 z-40 bg-emerald-deep/95 backdrop-blur-md shadow-lg border-b border-emerald-medium/50 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-4">
-                <div class="flex items-center gap-3 min-w-0">
-                    <div class="p-2 bg-emerald-medium rounded-xl border border-emerald-light/20 flex-shrink-0">
-                        <i data-lucide="file-text" class="w-5 h-5 sm:w-6 h-6 text-gold-accent"></i>
-                    </div>
-                    <div>
-                        <span class="text-[10px] font-mono font-bold text-gold-accent/80 block tracking-widest uppercase">Formulir Digital</span>
-                        <h1 class="text-base sm:text-lg md:text-xl font-serif-custom font-bold tracking-wide truncate">
-                            Surat Izin Guru Az-Zahro
-                        </h1>
-                    </div>
-                </div>
-            </div>
-        </nav>
+        <!-- Modal Review & Cetak Dokumen PDF/WhatsApp -->
+        <div id="preview-modal" class="absolute inset-0 bg-black/95 z-50 overflow-y-auto p-3">
+            <div class="min-h-screen flex flex-col justify-center items-center py-4">
+                
+                <!-- Dokumen Preview Kontainer -->
+                <div class="bg-white shadow-2xl overflow-x-auto rounded-md mb-4" id="zoom-wrapper" style="transform-origin: top center;">
+                    <div id="pdf-template">
+                        <!-- Kop Surat Dengan Struktur Teks Satu Baris -->
+                        <div class="kop-container">
+                            <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
+                            <div class="kop-teks">
+                                <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
+                                <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
+                                <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
+                                <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
+                            </div>
+                            <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
+                        </div>
+                        <!-- Box Informasi Sekretariat Satu Baris dengan Jarak Padding Tipis -->
+                        <div class="kop-info-sekretariat">
+                            <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
+                        </div>
+                        <div class="kop-garis-bawah"></div>
 
-        <!-- Formulir Penginputan Utama -->
-        <main class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-12">
-            <div class="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-100">
-                <div class="flex items-center gap-2.5 mb-6 border-b border-gray-100 pb-4">
-                    <i data-lucide="sliders-horizontal" class="w-5 h-5 text-emerald-deep"></i>
-                    <h5 class="text-lg font-bold text-gray-900 font-serif-custom">Lengkapi Informasi Permohonan Izin</h5>
+                        <!-- Bagian Judul Surat -->
+                        <div class="judul-surat-container">
+                            <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
+                        </div>
+
+                        <p>Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
+                        <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
+                        <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+                        <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
+                        
+                        <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap"></span></div>
+                        <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
+
+                        <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
+                        <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
+                        <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
+                        <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
+
+                        <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
+                        <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
+
+                        <div class="ttd-section">
+                            <div class="ttd-box">
+                                <p style="margin-bottom: 5px;">Bondowoso, <span id="outTglSkrg"></span></p>
+                                <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
+                                <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
+                                    <img id="outTtd" style="max-width:160px; max-height:80px;">
+                                </div>
+                                <span class="nama-bawah" id="outNama2"></span>
+                            </div>
+                        </div>
+                    </div>
                 </div>
                 
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="user" class="w-4 h-4 text-gray-400"></i> Nama Lengkap
-                        </label>
-                        <input type="text" id="nama" placeholder="Tulis Nama atau Inisial" list="daftar-guru" autocomplete="off" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
-                        <datalist id="daftar-guru"></datalist>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="book-open" class="w-4 h-4 text-gray-400"></i> Guru Mapel
-                        </label>
-                        <input type="text" id="mapel" placeholder="Contoh: Matematika" list="daftar-mapel" autocomplete="off" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
-                        <datalist id="daftar-mapel"></datalist>
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                        <div class="sm:col-span-1">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                                <i data-lucide="calendar-days" class="w-4 h-4 text-gray-400"></i> Hari
-                            </label>
-                            <input type="text" id="hari" placeholder="Otomatis" readonly class="w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-gray-500 font-medium outline-none">
-                        </div>
-                        <div class="sm:col-span-2">
-                            <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                                <i data-lucide="calendar" class="w-4 h-4 text-gray-400"></i> Tanggal Izin
-                            </label>
-                            <input type="date" id="tgl" onchange="updateHari()" enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="help-circle" class="w-4 h-4 text-gray-400"></i> Keterangan / Alasan
-                        </label>
-                        <input type="text" id="alasan" placeholder="Sebutkan keterangan ketidakhadiran..." enterkeyhint="done" class="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:bg-white focus:ring-2 focus:ring-emerald-medium/20 focus:border-emerald-deep transition-all outline-none">
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2 flex items-center gap-1.5">
-                            <i data-lucide="pen-tool" class="w-4 h-4 text-gray-400"></i> Tanda Tangan Digital
-                        </label>
-                        <div class="border border-gray-200 bg-gray-50 rounded-2xl overflow-hidden shadow-inner focus-within:border-emerald-deep transition-all">
-                            <canvas id="pad" class="w-full h-40 bg-white/60"></canvas>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-4 pt-2">
-                        <button class="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-sm rounded-xl transition-all active:scale-[0.98]" onclick="pad.clear()">
-                            <i data-lucide="trash-2" class="w-4 h-4"></i> Hapus TTD
-                        </button>
-                        <button class="inline-flex items-center justify-center gap-2 px-5 py-3.5 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-sm rounded-xl transition-all shadow-md hover:shadow-lg active:scale-[0.98]" onclick="showPreview()">
-                            <i data-lucide="eye" class="w-4 h-4 text-gold-accent"></i> Preview Surat
-                        </button>
-                    </div>
+                <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ (Grid Mobile View) -->
+                <div class="w-full bg-gray-100 p-3 rounded-2xl grid grid-cols-2 gap-2 box-border shadow-inner">
+                    <button class="px-2 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="closePreview()">
+                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
+                    </button>
+                    <button class="px-2 py-3 bg-[#128C7E] hover:bg-[#0e6f64] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="shareTextOnly()">
+                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i> BAGIKAN TEKS
+                    </button>
+                    <button class="px-2 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnShare" onclick="shareToWhatsApp()">
+                        <i data-lucide="image" class="w-3.5 h-3.5"></i> BAGIKAN GAMBAR
+                    </button>
+                    <button class="px-2 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnDownload" onclick="downloadPDF()">
+                        <i data-lucide="save" class="w-3.5 h-3.5 text-gold-accent"></i> SIMPAN PDF
+                    </button>
                 </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal Review & Cetak Dokumen PDF/WhatsApp -->
-    <div id="preview-modal" class="fixed inset-0 bg-black/90 z-50 overflow-y-auto p-4">
-        <div class="min-h-screen flex flex-col justify-center items-center py-6">
-            
-            <!-- Dokumen Preview Kontainer -->
-            <div class="bg-white shadow-2xl overflow-x-auto rounded-md mb-6" id="zoom-wrapper" style="transform-origin: top center;">
-                <div id="pdf-template">
-                    <!-- Kop Surat Dengan Struktur Teks Satu Baris -->
-                    <div class="kop-container">
-                        <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
-                        <div class="kop-teks">
-                            <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
-                            <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
-                            <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
-                            <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
-                        </div>
-                        <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
-                    </div>
-                    <!-- Box Informasi Sekretariat Satu Baris dengan Jarak Padding Tipis -->
-                    <div class="kop-info-sekretariat">
-                        <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
-                    </div>
-                    <div class="kop-garis-bawah"></div>
-
-                    <!-- Bagian Judul Surat -->
-                    <div class="judul-surat-container">
-                        <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
-                    </div>
-
-                    <p>Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
-                    <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
-                    <p><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
-                    <p>Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
-                    
-                    <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap"></span></div>
-                    <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
-
-                    <p>Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
-                    <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
-                    <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                    <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap"></span></div>
-
-                    <p style="margin-top: 20px;">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
-                    <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
-
-                    <div class="ttd-section">
-                        <div class="ttd-box">
-                            <p style="margin-bottom: 5px;">Bondowoso, <span id="outTglSkrg"></span></p>
-                            <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
-                            <div style="height: 80px; display: flex; align-items: center; justify-content: center;">
-                                <img id="outTtd" style="max-width:160px; max-height:80px;">
-                            </div>
-                            <span class="nama-bawah" id="outNama2"></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ (Grid Responsif) -->
-            <div class="w-full max-w-[210mm] bg-gray-100 p-4 rounded-2xl grid grid-cols-2 sm:grid-cols-4 gap-3 box-border">
-                <button class="px-3 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xs sm:text-sm rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1.5" onclick="closePreview()">
-                    <i data-lucide="x-circle" class="w-4 h-4"></i> BATAL
-                </button>
-                <button class="px-3 py-3 bg-[#128C7E] hover:bg-[#0e6f64] text-white font-bold text-xs sm:text-sm rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1.5" onclick="shareTextOnly()">
-                    <i data-lucide="message-square" class="w-4 h-4"></i> BAGIKAN TEKS
-                </button>
-                <button class="px-3 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-xs sm:text-sm rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1.5" id="btnShare" onclick="shareToWhatsApp()">
-                    <i data-lucide="image" class="w-4 h-4"></i> BAGIKAN GAMBAR
-                </button>
-                <button class="px-3 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-xs sm:text-sm rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1.5" id="btnDownload" onclick="downloadPDF()">
-                    <i data-lucide="save" class="w-4 h-4 text-gold-accent"></i> SIMPAN PDF
-                </button>
             </div>
         </div>
-    </div>
 
-    <!-- Footer Sistem Terintegrasi Lembaga Bergaya PSAJ -->
-    <footer class="bg-emerald-deep text-gray-200 border-t-2 border-gold-accent/40 mt-auto py-8 px-4">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-                <div class="md:col-span-4 space-y-2">
+        <!-- Footer Sistem Terintegrasi Lembaga Bergaya PSAJ -->
+        <footer class="bg-emerald-deep text-gray-200 border-t-2 border-gold-accent/40 mt-auto py-6 px-4">
+            <div class="w-full space-y-4">
+                <div class="space-y-2">
                     <div class="flex items-center gap-2 text-white">
-                        <i data-lucide="info" class="w-5 h-5 text-gold-accent"></i>
-                        <span class="font-serif-custom font-bold text-base tracking-wide">Sistem Persuratan Lembaga</span>
+                        <i data-lucide="info" class="w-4 h-4 text-gold-accent"></i>
+                        <span class="font-serif-custom font-bold text-sm tracking-wide">Sistem Persuratan Lembaga</span>
                     </div>
-                    <p class="text-xs text-gray-300/90 leading-relaxed">
+                    <p class="text-[11px] text-gray-300/90 leading-relaxed">
                         Aplikasi ini merupakan platform digital terintegrasi yang digunakan untuk mempermudah administrasi, manajemen perizinan, dan pembuatan dokumen pemberitahuan ketidakhadiran dewan guru secara instan.
                     </p>
                 </div>
-                <div class="md:col-span-8 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div class="bg-emerald-medium/30 p-4 rounded-xl border border-emerald-light/10">
-                        <h6 class="text-xs font-bold text-gold-accent uppercase tracking-wider mb-1">SMP Islam Az-Zahro</h6>
-                        <p class="text-[11px] text-gray-300 leading-normal">
-                            Digunakan oleh jajaran dewan guru SMP Islam Az-Zahro untuk menunjang validitas data kehadiran serta rekapitulasi performa absensi berkala pengajar secara transparan dan akurat.
+                <div class="grid grid-cols-1 gap-3">
+                    <div class="bg-emerald-medium/30 p-3 rounded-xl border border-emerald-light/10">
+                        <h6 class="text-[10px] font-bold text-gold-accent uppercase tracking-wider mb-1">SMP Islam Az-Zahro</h6>
+                        <p class="text-[10px] text-gray-300 leading-normal">
+                            Digunakan oleh jajaran dewan guru SMP Islam Az-Zahro untuk menunjang validitas data kehadiran serta rekapitulasi absensi.
                         </p>
                     </div>
-                    <div class="bg-emerald-medium/30 p-4 rounded-xl border border-emerald-light/10">
-                        <h6 class="text-xs font-bold text-gold-accent uppercase tracking-wider mb-1">SMK Az-Zahro</h6>
-                        <p class="text-[11px] text-gray-300 leading-normal">
-                            Mengakomodasi standarisasi surat izin ketidakhadiran mengajar untuk jenjang SMK guna mendukung koordinasi tugas mandiri dan ketertiban administrasi kurikulum operasional sekolah.
+                    <div class="bg-emerald-medium/30 p-3 rounded-xl border border-emerald-light/10">
+                        <h6 class="text-[10px] font-bold text-gold-accent uppercase tracking-wider mb-1">SMK Az-Zahro</h6>
+                        <p class="text-[10px] text-gray-300 leading-normal">
+                            Mengakomodasi standarisasi surat izin ketidakhadiran mengajar untuk jenjang SMK guna mendukung ketertiban administrasi.
                         </p>
                     </div>
                 </div>
+                <div class="border-t border-emerald-medium/40 pt-3 text-center text-[10px] text-gray-400">
+                    &copy; 2026 Yayasan Ponpes Salafiyah Syafi'iyah Az-Zahro<br>
+                    SMP Islam Az-Zahro • SMK Az-Zahro
+                </div>
             </div>
-            <div class="border-t border-emerald-medium/40 mt-6 pt-4 text-center text-[11px] text-gray-400">
-                &copy; 2026 Yayasan Ponpes Salafiyah Syafi'iyah Az-Zahro<br>
-                SMP Islam Az-Zahro • SMK Az-Zahro
-            </div>
-        </div>
-    </footer>
+        </footer>
+
+    </div>
 
     <!-- Logic Script Asli (Tanpa Ada Logika yang Dikurangi atau Diubah) -->
     <script src="guru.js"></script>
@@ -374,6 +377,7 @@
         function showAlert() { document.getElementById('custom-alert').style.display = 'flex'; }
         function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
 
+        // Skala diperbaiki menyesuaikan max-width container modal
         function showPreview() {
             const nama = document.getElementById('nama').value;
             const tgl = document.getElementById('tgl').value;
@@ -395,7 +399,8 @@
             document.getElementById('preview-modal').style.display = 'block';
 
             const wrapper = document.getElementById('zoom-wrapper');
-            const scale = (window.innerWidth * 0.95) / 794;
+            const targetWidth = window.innerWidth > 448 ? 420 : (window.innerWidth * 0.90);
+            const scale = targetWidth / 794; // Lebar standard awal template dalam pixel 210mm
             wrapper.style.transform = scale < 1 ? `scale(${scale})` : `scale(1)`;
             lucide.createIcons();
         }
@@ -497,7 +502,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(pesanTeks)}`, '_blank');
             } finally {
                 btn.disabled = false;
-                btn.innerText = "BAGIKAN GAMBAR (WA)";
+                btn.innerText = "BAGIKAN GAMBAR";
                 wrapper.style.transform = currentTransform;
             }
         }
