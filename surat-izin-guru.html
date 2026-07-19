@@ -79,6 +79,7 @@
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
         .kop-info-sekretariat strong { font-weight: bold; text-decoration: underline; }
+        .kop-info-sekretariat strong { font-weight: bold; text-decoration: underline; }
         .kop-garis-bawah { border-top: 3px solid black; border-bottom: 1px solid black; height: 2px; margin-top: 3px; margin-bottom: 20px; }
         .judul-surat-container { text-align: center; margin-top: 15px; margin-bottom: 15px; }
         .judul-surat-container p { margin: 0; font-weight: bold; text-decoration: underline; }
@@ -198,11 +199,11 @@
         </div>
 
         <!-- Modal Review & Cetak Dokumen PDF/WhatsApp -->
-        <div id="preview-modal" class="absolute inset-0 bg-black/95 z-50 overflow-y-auto p-3">
-            <div class="min-h-screen flex flex-col justify-center items-center py-4">
-                
+        <div id="preview-modal" class="absolute inset-0 bg-black/95 z-50 p-3 flex flex-col justify-between items-center h-screen overflow-hidden">
+            <!-- Wrapper Preview dengan Scroll Internal agar tidak menenggelamkan tombol -->
+            <div class="w-full flex-grow overflow-y-auto flex justify-center items-start pt-2 pb-4" style="max-height: calc(100vh - 120px);">
                 <!-- Dokumen Preview Kontainer -->
-                <div class="bg-white shadow-2xl overflow-x-auto rounded-md mb-4" id="zoom-wrapper" style="transform-origin: top center;">
+                <div class="bg-white shadow-2xl overflow-x-auto rounded-md" id="zoom-wrapper" style="transform-origin: top center;">
                     <div id="pdf-template">
                         <!-- Kop Surat Dengan Struktur Teks Satu Baris -->
                         <div class="kop-container">
@@ -254,22 +255,22 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ (Grid Mobile View) -->
-                <div class="w-full bg-gray-100 p-3 rounded-2xl grid grid-cols-2 gap-2 box-border shadow-inner">
-                    <button class="px-2 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="closePreview()">
-                        <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
-                    </button>
-                    <button class="px-2 py-3 bg-[#128C7E] hover:bg-[#0e6f64] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="shareTextOnly()">
-                        <i data-lucide="message-square" class="w-3.5 h-3.5"></i> BAGIKAN TEKS
-                    </button>
-                    <button class="px-2 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnShare" onclick="shareToWhatsApp()">
-                        <i data-lucide="image" class="w-3.5 h-3.5"></i> BAGIKAN GAMBAR
-                    </button>
-                    <button class="px-2 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnDownload" onclick="downloadPDF()">
-                        <i data-lucide="save" class="w-3.5 h-3.5 text-gold-accent"></i> SIMPAN PDF
-                    </button>
-                </div>
+            </div>
+            
+            <!-- Panel Aksi Kontrol Bawah Modifikasi Bergaya PSAJ (Terkunci Statis di Bawah Layar Modal Tanpa Scroll) -->
+            <div class="w-full bg-gray-100 p-3 rounded-2xl grid grid-cols-2 gap-2 box-border shadow-2xl border-t border-gray-200 mb-2 flex-shrink-0 z-50">
+                <button class="px-2 py-3 bg-gray-500 hover:bg-gray-600 text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="closePreview()">
+                    <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
+                </button>
+                <button class="px-2 py-3 bg-[#128C7E] hover:bg-[#0e6f64] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" onclick="shareTextOnly()">
+                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> BAGIKAN TEKS
+                </button>
+                <button class="px-2 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnShare" onclick="shareToWhatsApp()">
+                    <i data-lucide="image" class="w-3.5 h-3.5"></i> BAGIKAN GAMBAR
+                </button>
+                <button class="px-2 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-xs rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1" id="btnDownload" onclick="downloadPDF()">
+                    <i data-lucide="save" class="w-3.5 h-3.5 text-gold-accent"></i> SIMPAN PDF
+                </button>
             </div>
         </div>
 
@@ -377,7 +378,6 @@
         function showAlert() { document.getElementById('custom-alert').style.display = 'flex'; }
         function closeAlert() { document.getElementById('custom-alert').style.display = 'none'; }
 
-        // Skala diperbaiki menyesuaikan max-width container modal
         function showPreview() {
             const nama = document.getElementById('nama').value;
             const tgl = document.getElementById('tgl').value;
@@ -396,11 +396,11 @@
             document.getElementById('outAlasan').textContent = document.getElementById('alasan').value || "-";
             document.getElementById('outTtd').src = pad.toDataURL();
 
-            document.getElementById('preview-modal').style.display = 'block';
+            document.getElementById('preview-modal').style.display = 'flex';
 
             const wrapper = document.getElementById('zoom-wrapper');
             const targetWidth = window.innerWidth > 448 ? 420 : (window.innerWidth * 0.90);
-            const scale = targetWidth / 794; // Lebar standard awal template dalam pixel 210mm
+            const scale = targetWidth / 794; 
             wrapper.style.transform = scale < 1 ? `scale(${scale})` : `scale(1)`;
             lucide.createIcons();
         }
@@ -544,7 +544,6 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
             await new Promise(r => setTimeout(r, 600));
 
-            // Konfigurasi khusus dikunci ke Ukuran Kertas F4 (215mm x 330mm)
             const opt = {
                 margin: 0,
                 filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatFile}.pdf`,
