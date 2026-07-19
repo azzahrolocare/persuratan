@@ -514,7 +514,14 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
             btn.innerText = "Memproses...";
 
             try {
-                const opt = { margin: 0, filename: 'temp.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: [215, 330] } };
+                // Konfigurasi opt disamakan persis dengan seting resolusi tinggi dan dimensi cetak F4 murni (215 x 330 mm)
+                const opt = { 
+                    margin: 0, 
+                    filename: 'temp.pdf', 
+                    image: { type: 'jpeg', quality: 0.98 }, 
+                    html2canvas: { scale: 2, useCORS: true, y: 0, scrollY: 0 }, 
+                    jsPDF: { unit: 'mm', format: [215, 330], orientation: 'portrait' } 
+                };
                 const canvasImg = await html2pdf().set(opt).from(el).toCanvas().get('canvas');
                 
                 const blob = await new Promise(resolve => canvasImg.toBlob(resolve, 'image/png'));
