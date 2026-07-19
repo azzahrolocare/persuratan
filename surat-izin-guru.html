@@ -109,8 +109,9 @@
         /* Wadah skala diubah posisinya agar rapi secara vertikal */
         .preview-scale-holder {
             display: flex;
-            justify-content: center;
-            align-items: flex-start;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
             width: 100%;
             padding-top: 10px;
         }
@@ -221,83 +222,86 @@
             </main>
         </div>
 
-        <!-- MODAL PREVIEW DENGAN SCROLL DAN TOMBOL STICKY FIXED FIXES -->
+        <!-- MODAL PREVIEW DENGAN SCROLL DAN TOMBOL DI BAWAH KERTAS -->
         <div id="preview-modal" class="absolute inset-0 bg-black/90 z-50 flex flex-col h-full overflow-hidden sm:rounded-3xl">
             
-            <!-- Panel Aksi Kontrol Atas (Posisinya sekarang di atas kokoh menempel layar HP) -->
-            <div class="absolute top-0 left-0 right-0 bg-white/95 backdrop-blur-md p-3.5 rounded-b-3xl grid grid-cols-2 gap-2 box-border shadow-[0_10px_25px_rgba(0,0,0,0.3)] border-b border-slate-200 z-50">
-                <button class="px-2 py-3 bg-slate-500 hover:bg-slate-600 text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="closePreview()">
-                    <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
-                </button>
-                <button class="px-2 py-3 bg-[#075E54] hover:bg-[#05433b] text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="shareTextOnly()">
-                    <i data-lucide="message-square" class="w-3.5 h-3.5"></i> BAGIKAN TEKS
-                </button>
-                <button class="px-2 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" id="btnShare" onclick="shareToWhatsApp()">
-                    <i data-lucide="image" class="w-3.5 h-3.5"></i> BAGIKAN GAMBAR
-                </button>
-                <button class="px-2 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" id="btnDownload" onclick="downloadPDF()">
-                    <i data-lucide="save" class="w-3.5 h-3.5 text-gold-accent"></i> SIMPAN PDF
-                </button>
-            </div>
-
-            <!-- Area Scroll Dokumen Putih (Diberi padding top agar isi kertas tidak tertutup tombol sticky atas) -->
-            <div class="w-full flex-grow overflow-y-auto p-3 box-border pt-32 pb-6">
+            <!-- Area Scroll Dokumen Putih -->
+            <div class="w-full flex-grow overflow-y-auto p-3 box-border pb-6">
                 <div class="preview-scale-holder">
-                    <!-- Dokumen Utama (Ukuran F4 Asli: Lebar 215mm (~812px), Tinggi 330mm (~1247px)) -->
-                    <div class="bg-white shadow-2xl rounded-sm overflow-hidden flex-shrink-0" id="zoom-wrapper" style="transform-origin: top center; width: 215mm; height: 330mm;">
-                        <div id="pdf-template">
-                            <!-- Kop Surat -->
-                            <div class="kop-container">
-                                <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
-                                <div class="kop-teks">
-                                    <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
-                                    <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
-                                    <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
-                                    <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
-                                </div>
-                                <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
-                            </div>
-                            
-                            <div class="kop-info-sekretariat">
-                                <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
-                            </div>
-                            <div class="kop-garis-bawah"></div>
-
-                            <!-- Bagian Judul Surat -->
-                            <div class="judul-surat-container">
-                                <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
-                            </div>
-
-                            <p class="mb-3">Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
-                            <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
-                            
-                            <p class="mb-3"><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
-                            
-                            <p class="mb-2">Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
-                            
-                            <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap font-bold"></span></div>
-                            <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
-
-                            <p class="my-3">Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
-                            
-                            <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
-                            <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
-                            <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap font-bold"></span></div>
-
-                            <p style="margin-top: 20px;" class="mb-3">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
-                            <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
-
-                            <!-- Tanda Tangan -->
-                            <div class="ttd-section">
-                                <div class="ttd-box">
-                                    <p style="margin-bottom: 4px;">Bondowoso, <span id="outTglSkrg"></span></p>
-                                    <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
-                                    <div style="height: 75px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
-                                        <img id="outTtd" style="max-width:150px; max-height:75px; object-fit: contain;">
+                    <!-- Kontainer Pembungkus Kertas Surat -->
+                    <div id="paper-wrapper" class="flex flex-col items-center">
+                        <!-- Dokumen Utama (Ukuran F4 Asli: Lebar 215mm (~812px), Tinggi 330mm (~1247px)) -->
+                        <div class="bg-white shadow-2xl rounded-sm overflow-hidden flex-shrink-0" id="zoom-wrapper" style="transform-origin: top center; width: 215mm; height: 330mm;">
+                            <div id="pdf-template">
+                                <!-- Kop Surat -->
+                                <div class="kop-container">
+                                    <img class="kop-logo-kiri" src="https://azzahro.web.id/presensi/logo-smp-azzahro.png" alt="Logo SMP">
+                                    <div class="kop-teks">
+                                        <p class="lembaga">PONDOK PESANTREN SALAFIYAH SYAFI'IYAH AZ-ZAHRO</p>
+                                        <p class="sekolah-smp">SEKOLAH MENENGAH PERTAMA (SMP) ISLAM AZ-ZAHRO</p>
+                                        <p class="sekolah-smk">SEKOLAH MENENGAH KEJURUAN (SMK) AZ-ZAHRO</p>
+                                        <p class="alamat">LOCARE CURAHDAMI BONDOWOSO</p>
                                     </div>
-                                    <span class="nama-bawah" id="outNama2"></span>
+                                    <img class="kop-logo-kanan" src="https://azzahro.web.id/presensi/logo-smk-azzahro.png" alt="Logo SMK">
+                                </div>
+                                
+                                <div class="kop-info-sekretariat">
+                                    <strong>Sekretariat:</strong> Desa Locare, Krajan RT 02/RW 01, Kecamatan Curahdami, Kabupaten Bondowoso No. HP: 085233485436 | Kode Pos: 68251
+                                </div>
+                                <div class="kop-garis-bawah"></div>
+
+                                <!-- Bagian Judul Surat -->
+                                <div class="judul-surat-container">
+                                    <p>SURAT PERMOHONAN IZIN/PEMBERITAHUAN</p>
+                                </div>
+
+                                <p class="mb-3">Kepada Yth.<br><b>Pengasuh Pondok Pesantren Salafiyah Syafi'iyah Az-Zahro</b><br>
+                                <b>Kepala Sekolah SMP Islam Az-Zahro dan SMK Az-Zahro</b><br>di Tempat</p>
+                                
+                                <p class="mb-3"><i>Assalamualaikum warahmatullahi wabarakatuh.</i></p>
+                                
+                                <p class="mb-2">Dengan hormat, saya yang bertanda tangan di bawah ini:</p>
+                                
+                                <div class="row-data"><div class="label-data">Nama</div><div class="titik-dua">:</div><span id="outNama" class="cap font-bold"></span></div>
+                                <div class="row-data"><div class="label-data">Guru Mapel</div><div class="titik-dua">:</div><span id="outMapel" class="cap"></span></div>
+
+                                <p class="my-3">Dengan adanya surat ini saya memohon izin untuk tidak hadir di sekolah pada:</p>
+                                
+                                <div class="row-data"><div class="label-data">Hari</div><div class="titik-dua">:</div><span id="outHari" class="cap"></span></div>
+                                <div class="row-data"><div class="label-data">Tanggal</div><div class="titik-dua">:</div><span id="outTgl"></span></div>
+                                <div class="row-data"><div class="label-data">Keterangan</div><div class="titik-dua">:</div><span id="outAlasan" class="cap font-bold"></span></div>
+
+                                <p style="margin-top: 20px;" class="mb-3">Demikian surat permohonan izin ini saya sampaikan.<br>Atas perhatiannya, saya ucapkan terima kasih.</p>
+                                <p><i>Wa'alaikumsalam warahmatullaahi wabarakaatuh.</i></p>
+
+                                <!-- Tanda Tangan -->
+                                <div class="ttd-section">
+                                    <div class="ttd-box">
+                                        <p style="margin-bottom: 4px;">Bondowoso, <span id="outTglSkrg"></span></p>
+                                        <p style="margin-bottom: 0; margin-top: 0;">Hormat Saya,</p>
+                                        <div style="height: 75px; display: flex; align-items: center; justify-content: center; margin: 5px 0;">
+                                            <img id="outTtd" style="max-width:150px; max-height:75px; object-fit: contain;">
+                                        </div>
+                                        <span class="nama-bawah" id="outNama2"></span>
+                                    </div>
                                 </div>
                             </div>
+                        </div>
+
+                        <!-- Panel Aksi Kontrol (Ditempatkan Tepat di Bawah Kertas Preview secara Relatif) -->
+                        <div id="control-panel" class="w-full bg-white/95 backdrop-blur-md p-3.5 rounded-2xl grid grid-cols-2 gap-2 box-border shadow-xl border border-slate-200 mt-4 z-10">
+                            <button class="px-2 py-3 bg-slate-500 hover:bg-slate-600 text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="closePreview()">
+                                <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> BATAL
+                            </button>
+                            <button class="px-2 py-3 bg-[#075E54] hover:bg-[#05433b] text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" onclick="shareTextOnly()">
+                                <i data-lucide="message-square" class="w-3.5 h-3.5"></i> BAGIKAN TEKS
+                            </button>
+                            <button class="px-2 py-3 bg-[#25D366] hover:bg-[#1ebd54] text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" id="btnShare" onclick="shareToWhatsApp()">
+                                <i data-lucide="image" class="w-3.5 h-3.5"></i> BAGIKAN GAMBAR
+                            </button>
+                            <button class="px-2 py-3 bg-emerald-deep hover:bg-emerald-medium text-white font-bold text-[11px] rounded-xl transition-all active:scale-95 inline-flex items-center justify-center gap-1 shadow-sm uppercase tracking-wide" id="btnDownload" onclick="downloadPDF()">
+                                <i data-lucide="save" class="w-3.5 h-3.5 text-gold-accent"></i> SIMPAN PDF
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -422,6 +426,8 @@
             // DYNAMIC SCALING MENGGUNAKAN INDEKS LEBAR HP (Akurat Mengunci Sisi Kiri-Kanan)
             const wrapper = document.getElementById('zoom-wrapper');
             const holder = document.querySelector('.preview-scale-holder');
+            const paperWrapper = document.getElementById('paper-wrapper');
+            const controlPanel = document.getElementById('control-panel');
             
             const f4Width = 812; // Ukuran pixel lebar dokumen asli F4
             const maxAvailableWidth = holder.clientWidth;
@@ -434,6 +440,10 @@
             // Beri margin bottom negatif dinamis agar scroll-container mendeteksi tinggi dokumen asli setelah di-scale
             const scaledHeight = 1247 * perfectScale;
             wrapper.style.marginBottom = `calc(${scaledHeight}px - 1247px)`;
+            
+            // Sesuaikan lebar pembungkus utama dan panel kontrol agar sinkron dengan hasil scaling kertas
+            paperWrapper.style.width = `${f4Width * perfectScale}px`;
+            controlPanel.style.width = '100%';
 
             lucide.createIcons();
         }
