@@ -94,7 +94,8 @@
         .kop-garis-bawah { border-top: 3px solid black; border-bottom: 1px solid black; height: 2px; margin-top: 3px; margin-bottom: 15px; }
         
         .judul-surat-container { text-align: center; margin-top: 10px; margin-bottom: 15px; }
-        .judul-surat-container p { margin: 0; font-weight: bold; text-decoration: underline; }
+        /* Perubahan di sini: Mengganti text-decoration ke border-bottom untuk presisi garis bawah agar tidak terlalu jauh saat di PDF */
+        .judul-surat-container p { margin: 0; font-weight: bold; display: inline-block; border-bottom: 1.5px solid black; padding-bottom: 1px; line-height: 1.1; }
         
         .cap { text-transform: capitalize; } 
         .row-data { display: flex; margin-bottom: 4px; align-items: flex-start; }
