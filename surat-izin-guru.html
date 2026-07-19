@@ -413,6 +413,11 @@
             document.getElementById('outTtd').src = pad.toDataURL();
 
             document.getElementById('preview-modal').style.display = 'flex';
+            
+            // Kunci scroll halaman latar belakang
+            document.documentElement.classList.remove('scroll-smooth');
+            document.documentElement.classList.add('overflow-hidden');
+            document.body.classList.add('overflow-hidden');
 
             // DYNAMIC SCALING MENGGUNAKAN INDEKS LEBAR HP (Akurat Mengunci Sisi Kiri-Kanan)
             const wrapper = document.getElementById('zoom-wrapper');
@@ -433,7 +438,14 @@
             lucide.createIcons();
         }
 
-        function closePreview() { document.getElementById('preview-modal').style.display = 'none'; }
+        function closePreview() { 
+            document.getElementById('preview-modal').style.display = 'none'; 
+            
+            // Kembalikan scroll halaman latar belakang ke semula
+            document.documentElement.classList.remove('overflow-hidden');
+            document.documentElement.classList.add('scroll-smooth');
+            document.body.classList.remove('overflow-hidden');
+        }
 
         function shareTextOnly() {
             const nama = document.getElementById('nama').value;
