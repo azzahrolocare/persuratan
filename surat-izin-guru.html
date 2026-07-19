@@ -58,10 +58,10 @@
             display: none;
         }
         
-        /* Gaya Khusus Konten Template Cetak PDF (Tetap Pakai Standar Kertas Times New Roman) */
+        /* Gaya Khusus Konten Template Cetak PDF (Dikunci ke Ukuran Kertas F4: 215mm x 330mm) */
         #pdf-template { 
-            background: white; padding: 15mm 20mm; font-family: 'Times New Roman', Times, serif; 
-            line-height: 1.6; color: black; font-size: 12pt; width: 210mm; box-sizing: border-box; 
+            background: white; padding: 20mm 20mm; font-family: 'Times New Roman', Times, serif; 
+            line-height: 1.6; color: black; font-size: 12pt; width: 215mm; min-height: 330mm; box-sizing: border-box; 
         }
         .kop-container { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         .kop-logo-kiri { width: 65px; height: auto; }
@@ -480,7 +480,7 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
             btn.innerText = "Memproses...";
 
             try {
-                const opt = { margin: 0, filename: 'temp.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: 'a4' } };
+                const opt = { margin: 0, filename: 'temp.pdf', image: { type: 'jpeg', quality: 0.95 }, html2canvas: { scale: 2, useCORS: true }, jsPDF: { unit: 'mm', format: [215, 330] } };
                 const canvasImg = await html2pdf().set(opt).from(el).toCanvas().get('canvas');
                 
                 const blob = await new Promise(resolve => canvasImg.toBlob(resolve, 'image/png'));
@@ -539,12 +539,13 @@ _Dikirim otomatis via Sistem Persuratan Lembaga Az-Zahro_`;
 
             await new Promise(r => setTimeout(r, 600));
 
+            // Konfigurasi khusus dikunci ke Ukuran Kertas F4 (215mm x 330mm)
             const opt = {
                 margin: 0,
                 filename: `Surat_Izin_${namaFile}_${hariFile}_${tglFormatFile}.pdf`,
                 image: { type: 'jpeg', quality: 0.98 },
                 html2canvas: { scale: 2, useCORS: true },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                jsPDF: { unit: 'mm', format: [215, 330], orientation: 'portrait' },
                 pagebreak: { mode: 'avoid-all' }
             };
 
